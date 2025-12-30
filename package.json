@@ -4,6 +4,19 @@
   "description": "Core contracts and types for Agnostic UI components",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
   "files": [
     "lib",
     "README.md"
@@ -31,5 +44,6 @@
   "bugs": {
     "url": "https://github.com/damarkuncoro/agnostic-ui-contract-core/issues"
   },
-  "homepage": "https://github.com/damarkuncoro/agnostic-ui-contract-core#readme"
+  "homepage": "https://github.com/damarkuncoro/agnostic-ui-contract-core#readme",
+  "packageManager": "pnpm@latest"
 }

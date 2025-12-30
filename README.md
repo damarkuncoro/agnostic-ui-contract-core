@@ -1,11 +1,11 @@
-# @agnostic-ui/contract-core
+# @damarkuncoro/agnostic-ui-contract-core
 
 Core contracts and types for Agnostic UI components. This package provides TypeScript interfaces and utility functions for building design system components that work across different UI frameworks.
 
 ## Installation
 
 ```bash
-npm install @agnostic-ui/contract-core
+npm install @damarkuncoro/agnostic-ui-contract-core
 ```
 
 ## Usage
@@ -18,7 +18,7 @@ import {
   UiTokenScale,
   UiExtendedTokens,
   resolveTheme
-} from '@agnostic-ui/contract-core';
+} from '@damarkuncoro/agnostic-ui-contract-core';
 
 // Use in your component definitions
 interface MyButtonProps {

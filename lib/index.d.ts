@@ -5,4 +5,5 @@ export * from "./variant";
 export * from "./a11y";
 export * from "./theme";
 export * from "./resolver";
+export * from "./utils";
 //# sourceMappingURL=index.d.ts.map

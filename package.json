@@ -1,5 +1,5 @@
 {
-  "name": "@agnostic-ui/contract-core",
+  "name": "@damarkuncoro/agnostic-ui-contract-core",
   "version": "1.0.0",
   "description": "Core contracts and types for Agnostic UI components",
   "main": "lib/index.js",

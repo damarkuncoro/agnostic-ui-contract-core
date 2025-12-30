@@ -26,10 +26,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agnostic-ui/agnostic-ui"
+    "url": "https://github.com/damarkuncoro/agnostic-ui-contract-core"
   },
   "bugs": {
-    "url": "https://github.com/agnostic-ui/agnostic-ui/issues"
+    "url": "https://github.com/damarkuncoro/agnostic-ui-contract-core/issues"
   },
-  "homepage": "https://github.com/agnostic-ui/agnostic-ui#readme"
+  "homepage": "https://github.com/damarkuncoro/agnostic-ui-contract-core#readme"
 }

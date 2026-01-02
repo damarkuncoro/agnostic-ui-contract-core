@@ -2,6 +2,10 @@
 
 import type { UiTokenScale } from "./types"
 
+export type UiRadiusSemantic = "none" | "sm" | "md" | "lg" | "full"
+
+export const uiRadiusSemantics: UiRadiusSemantic[] = ["none", "sm", "md", "lg", "full"]
+
 export interface UiRadiusTokens {
   scale: UiTokenScale<number>
 

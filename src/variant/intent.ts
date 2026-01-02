@@ -8,6 +8,8 @@ export type UiVariantIntent =
   | "danger"
   | "neutral"
 
+export const uiIntents: UiVariantIntent[] = ["primary", "secondary", "success", "warning", "danger", "neutral"]
+
 export interface UiIntentVariant {
   intent?: UiVariantIntent
 }

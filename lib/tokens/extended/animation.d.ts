@@ -1,4 +1,6 @@
 import type { UiExtendedScale, UiExtendedTokenGroup } from "./types";
+export type UiAnimationSemantic = "enter" | "exit" | "emphasize" | "subtle";
+export declare const uiAnimationSemantics: UiAnimationSemantic[];
 export interface UiAnimationTokens extends UiExtendedTokenGroup {
     duration: UiExtendedScale<number>;
     easing: UiExtendedScale<string>;

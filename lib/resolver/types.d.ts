@@ -1,4 +1,5 @@
 export type UiResolveMode = "static" | "runtime";
+export declare const uiResolveModes: UiResolveMode[];
 export interface UiResolveOptions {
     /** static = build/SSR, runtime = responsive/user-pref */
     mode?: UiResolveMode;

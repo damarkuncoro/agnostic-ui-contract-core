@@ -7,6 +7,8 @@ export type UiVariantTone =
   | "ghost"
   | "link"
 
+export const uiTones: UiVariantTone[] = ["solid", "soft", "outline", "ghost", "link"]
+
 export interface UiToneVariant {
   tone?: UiVariantTone
 }

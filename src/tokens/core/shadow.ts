@@ -2,6 +2,10 @@
 
 import type { UiTokenScale } from "./types"
 
+export type UiShadowSemantic = "sm" | "md" | "lg" | "focus"
+
+export const uiShadowSemantics: UiShadowSemantic[] = ["sm", "md", "lg", "focus"]
+
 export interface UiShadowTokens {
   scale: UiTokenScale<string>
 

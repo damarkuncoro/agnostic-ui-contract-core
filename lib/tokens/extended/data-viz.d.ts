@@ -1,4 +1,6 @@
 import type { UiExtendedScale, UiExtendedTokenGroup } from "./types";
+export type UiDataVizSemantic = "categorical" | "sequential" | "diverging";
+export declare const uiDataVizSemantics: UiDataVizSemantic[];
 export interface UiDataVizTokens extends UiExtendedTokenGroup {
     scale: UiExtendedScale<number>;
     categorical: UiExtendedScale<string>;

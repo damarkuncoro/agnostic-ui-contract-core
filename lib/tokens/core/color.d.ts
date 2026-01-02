@@ -1,4 +1,10 @@
 import type { UiTokenScale } from "./types";
+export type UiColorTextSemantic = "primary" | "secondary" | "muted" | "inverse" | "disabled";
+export type UiColorBackgroundSemantic = "surface" | "elevated" | "muted" | "inverse";
+export type UiColorBorderSemantic = "default" | "subtle" | "strong" | "focus";
+export declare const uiColorTextSemantics: UiColorTextSemantic[];
+export declare const uiColorBackgroundSemantics: UiColorBackgroundSemantic[];
+export declare const uiColorBorderSemantics: UiColorBorderSemantic[];
 export interface UiColorTokens {
     /** Base palette (brand / neutral) */
     palette: {

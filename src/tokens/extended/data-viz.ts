@@ -2,6 +2,10 @@
 
 import type { UiExtendedScale, UiExtendedTokenGroup } from "./types"
 
+export type UiDataVizSemantic = "categorical" | "sequential" | "diverging"
+
+export const uiDataVizSemantics: UiDataVizSemantic[] = ["categorical", "sequential", "diverging"]
+
 export interface UiDataVizTokens extends UiExtendedTokenGroup {
   scale: UiExtendedScale<number>
 

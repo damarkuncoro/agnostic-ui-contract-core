@@ -2,6 +2,10 @@
 
 import type { UiTokenScale } from "./types"
 
+export type UiTypographySemantic = "body" | "heading" | "caption"
+
+export const uiTypographySemantics: UiTypographySemantic[] = ["body", "heading", "caption"]
+
 export interface UiTypographyTokens {
   fontFamily: {
     base: string

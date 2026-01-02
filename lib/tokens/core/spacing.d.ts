@@ -1,4 +1,6 @@
 import type { UiTokenScale } from "./types";
+export type UiSpacingSemantic = "xs" | "sm" | "md" | "lg" | "xl";
+export declare const uiSpacingSemantics: UiSpacingSemantic[];
 export interface UiSpacingTokens {
     scale: UiTokenScale<number>;
     semantic: {

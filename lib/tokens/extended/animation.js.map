@@ -1,1 +1,1 @@
-{"version":3,"file":"animation.js","sourceRoot":"","sources":["../../../src/tokens/extended/animation.ts"],"names":[],"mappings":";AAAA,+BAA+B"}
+{"version":3,"file":"animation.js","sourceRoot":"","sources":["../../../src/tokens/extended/animation.ts"],"names":[],"mappings":"AAAA,+BAA+B;AAM/B,MAAM,CAAC,MAAM,oBAAoB,GAA0B,CAAC,OAAO,EAAE,MAAM,EAAE,WAAW,EAAE,QAAQ,CAAC,CAAA"}

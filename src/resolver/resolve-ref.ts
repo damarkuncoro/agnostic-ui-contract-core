@@ -1,6 +1,7 @@
 // src/resolver/resolve-ref.ts
 
 import type { UiTokenValue } from "../tokens/core"
+import { ReferenceResolutionError } from "./types"
 
 export function resolveRef(
   value: UiTokenValue,
@@ -9,9 +10,16 @@ export function resolveRef(
   if (
     typeof value === "object" &&
     value !== null &&
-    "ref" in value
+    "$ref" in value
   ) {
-    return lookup(value.ref)
+    const ref = value.$ref
+    const resolved = lookup(ref)
+
+    if (resolved === undefined) {
+      throw new ReferenceResolutionError(ref)
+    }
+
+    return resolved
   }
 
   return value

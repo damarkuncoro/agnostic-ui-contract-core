@@ -2,26 +2,80 @@
 
 import type { UiTheme } from "../theme"
 import type { UiResolveOptions } from "./types"
-import { resolveRef } from "./resolve-ref"
-import { resolveMath } from "./resolve-math"
-import { resolveResponsive } from "./resolve-responsive"
+import { ValidationError, CircularReferenceError } from "./types"
+import { Resolver, ResolverPipeline } from "./resolve-pipeline"
+
+/**
+ * Validates theme structure and options
+ */
+function validateInputs(theme: UiTheme, options: UiResolveOptions): void {
+  // Validate theme structure
+  if (!theme || typeof theme !== 'object') {
+    throw new ValidationError('Theme must be a valid object')
+  }
+
+  if (!theme.version || typeof theme.version !== 'string') {
+    throw new ValidationError('Theme must have a valid version string')
+  }
+
+  if (!theme.tokens || typeof theme.tokens !== 'object') {
+    throw new ValidationError('Theme must have a tokens object')
+  }
+
+  // Validate options
+  if (options.mode && !['static', 'runtime'].includes(options.mode)) {
+    throw new ValidationError(`Invalid mode: ${options.mode}. Must be 'static' or 'runtime'`)
+  }
+
+  if (options.breakpoint && typeof options.breakpoint !== 'string') {
+    throw new ValidationError('Breakpoint must be a string')
+  }
+}
 
 export function resolveTheme(
   theme: UiTheme,
   options: UiResolveOptions = {}
 ): UiTheme {
+  // Validate inputs
+  validateInputs(theme, options)
+
   const mode = options.mode ?? "static"
+  const breakpoint = options.breakpoint
+
+  // Create cached lookup with circular reference detection
+  const lookupCache = new Map<string, unknown>()
+  const resolutionPath: string[] = []
 
   const lookup = (path: string): unknown => {
+    // Check cache first
+    if (lookupCache.has(path)) {
+      return lookupCache.get(path)
+    }
+
+    // Check for circular reference
+    if (resolutionPath.includes(path)) {
+      throw new CircularReferenceError([...resolutionPath, path])
+    }
+
+    // Resolve the path
     const parts = path.split(".")
     let current: any = theme.tokens
 
-    for (const key of parts) {
-      if (current == null) return undefined
-      current = current[key]
-    }
+    resolutionPath.push(path)
+    try {
+      for (const key of parts) {
+        if (current == null) {
+          lookupCache.set(path, undefined)
+          return undefined
+        }
+        current = current[key]
+      }
 
-    return current
+      lookupCache.set(path, current)
+      return current
+    } finally {
+      resolutionPath.pop()
+    }
   }
 
   const resolveValue = (value: any): any => {
@@ -30,12 +84,12 @@ export function resolveTheme(
     }
 
     if (typeof value === "object" && value !== null) {
-      if ("ref" in value) {
-        const resolved = resolveRef(value, lookup)
-        const withMath = resolveMath(value, resolved)
-        return resolveResponsive(withMath, mode)
+      // Check if this is a token that needs resolution
+      if ("$ref" in value || "$math" in value || "$responsive" in value) {
+        return Resolver.resolve(value, mode, lookup, breakpoint)
       }
 
+      // For plain objects, recursively resolve all properties
       const out: any = {}
       for (const key in value) {
         out[key] = resolveValue(value[key])

@@ -5,18 +5,22 @@ export type UiTokenPrimitive =
   | number
 
 export type UiTokenRef = {
-  ref: string
+  $ref: string
 }
 
 export type UiTokenMath = {
-  multiply?: number
-  add?: number
+  $math: string
+}
+
+export type UiTokenResponsive = {
+  $responsive: Record<string, UiTokenValue>
 }
 
 export type UiTokenValue =
   | UiTokenPrimitive
   | UiTokenRef
-  | (UiTokenRef & UiTokenMath)
+  | UiTokenMath
+  | UiTokenResponsive
 
 export type UiTokenScale<T = UiTokenValue> =
   Record<string, T>

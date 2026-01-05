@@ -696,6 +696,427 @@ If you're upgrading from earlier versions:
 3. **Error Handling**: New typed exceptions provide better error context
 4. **Performance**: Automatic optimizations with no configuration needed
 
+## 📋 Contract Development Guidelines
+
+This section provides **comprehensive standards** for developing contract packages that extend `@damarkuncoro/agnostic-ui-contract-core`. These guidelines ensure consistency, maintainability, and interoperability across the Agnostic UI ecosystem.
+
+### 🏗️ Package Structure Standards
+
+#### **Required Directory Structure**
+```
+packages/agnostic-ui-contract-[component]/
+├── src/
+│   ├── index.ts                    # Main exports
+│   ├── [component].a11y.ts         # Accessibility semantics
+│   ├── [component].types.ts        # TypeScript interfaces
+│   ├── [component].variants.ts     # Component variants
+│   ├── [component].tokens.ts       # Token definitions
+│   └── resolver.ts                 # Resolver integration (if needed)
+├── package.json
+├── tsconfig.json
+├── README.md
+└── lib/                           # Compiled output
+```
+
+#### **File Naming Conventions**
+- **Component contracts**: `agnostic-ui-contract-[component]`
+- **Base packages**: `agnostic-ui-base-[component]`
+- **Skin packages**: `agnostic-ui-skin-[framework]-[component]`
+- **Provider packages**: `agnostic-ui-provider-[framework]`
+
+### 🎯 Semantic Key Definitions
+
+#### **Variant Arrays (Required)**
+```typescript
+// ✅ DO: Define semantic variants
+export const uiButtonVariants = ["solid", "outline", "ghost", "link"] as const
+export const uiButtonSizes = ["xs", "sm", "md", "lg", "xl"] as const
+export const uiButtonIntents = ["primary", "secondary", "success", "warning", "danger"] as const
+
+// ✅ DO: Export union types
+export type UiButtonVariant = typeof uiButtonVariants[number]
+export type UiButtonSize = typeof uiButtonSizes[number]
+export type UiButtonIntent = typeof uiButtonIntents[number]
+
+// ❌ DON'T: Use physical values
+export const buttonSizes = ["small", "medium", "large"] // Too generic
+export const colors = ["#007acc", "#6b7280"] // No semantic meaning
+```
+
+#### **Token Semantics (Recommended)**
+```typescript
+// ✅ DO: Define component-specific token semantics
+export const uiButtonTokenKeys = {
+  height: "button.height",
+  paddingX: "button.paddingX",
+  paddingY: "button.paddingY",
+  borderRadius: "button.borderRadius",
+  fontSize: "button.fontSize"
+} as const
+```
+
+### 🔧 TypeScript Standards
+
+#### **Interface Definitions**
+```typescript
+// ✅ DO: Extend core types
+export interface UiButtonVariant extends UiComponentVariant {
+  size?: UiButtonSize
+  intent?: UiButtonIntent
+  tone?: UiButtonTone
+}
+
+// ✅ DO: Use discriminated unions for complex variants
+export type UiButtonState =
+  | { state: "idle" }
+  | { state: "loading"; spinnerSize?: UiLoadingSpinnerSize }
+  | { state: "disabled" }
+```
+
+#### **Generic Constraints**
+```typescript
+// ✅ DO: Constrain generics appropriately
+export interface UiComponentProps<T extends UiComponentVariant = UiComponentVariant> {
+  variant?: T
+  className?: string
+  children?: React.ReactNode
+}
+```
+
+### 🎨 Token Resolution Integration
+
+#### **Resolver Integration Pattern**
+```typescript
+// ✅ DO: Integrate with core resolver
+import { Resolver, resolveTheme } from '@damarkuncoro/agnostic-ui-contract-core'
+
+export function resolveButtonTokens(
+  theme: UiTheme,
+  options: UiResolveOptions = {}
+): UiResolvedButtonTokens {
+  // Use core resolver for token resolution
+  const resolvedTheme = resolveTheme(theme, options)
+
+  // Extract component-specific tokens
+  return {
+    height: resolvedTheme.extendedTokens?.button?.height,
+    paddingX: resolvedTheme.extendedTokens?.button?.paddingX,
+    // ... other button tokens
+  }
+}
+```
+
+#### **Custom Resolver Steps**
+```typescript
+// ✅ DO: Add custom resolvers when needed
+import { ResolverPipeline, ResolverStep } from '@damarkuncoro/agnostic-ui-contract-core'
+
+const customButtonResolver: ResolverStep = {
+  name: 'button-custom',
+  canHandle: (value) => typeof value === 'object' && value !== null && '$button' in value,
+  resolve: (value, context) => {
+    // Custom button-specific resolution logic
+    return resolveButtonSpecificTokens(value, context)
+  }
+}
+
+// Extend default pipeline
+const extendedPipeline = new ResolverPipeline()
+  .addStep(customButtonResolver)
+```
+
+### 📚 Documentation Standards
+
+#### **README Structure (Required)**
+```markdown
+# @damarkuncoro/agnostic-ui-contract-[component]
+
+Brief description of the component contract.
+
+## Installation
+
+## Usage
+
+### Basic Usage
+### Advanced Usage with Token Resolution
+
+## API
+
+### Types
+### Semantic Arrays
+### Token Resolution
+
+## Component Variants
+
+## Token Definitions
+
+## Integration Examples
+
+## License
+```
+
+#### **Code Documentation**
+```typescript
+/**
+ * Button component contract defining semantic variants and tokens.
+ *
+ * @example
+ * ```typescript
+ * import { uiButtonVariants, resolveButtonTokens } from '@damarkuncoro/agnostic-ui-contract-button'
+ *
+ * const button: UiButtonVariant = {
+ *   size: "md",
+ *   intent: "primary"
+ * }
+ * ```
+ */
+export interface UiButtonVariant extends UiComponentVariant {
+  /** Button size variant */
+  size?: UiButtonSize
+  /** Button color intent */
+  intent?: UiButtonIntent
+}
+```
+
+### 🧪 Testing Guidelines
+
+#### **Required Test Coverage**
+```typescript
+// ✅ DO: Test semantic arrays
+describe('uiButtonVariants', () => {
+  it('should contain all required variants', () => {
+    expect(uiButtonVariants).toContain('solid')
+    expect(uiButtonVariants).toContain('outline')
+  })
+
+  it('should be readonly', () => {
+    expect(() => { uiButtonVariants[0] = 'modified' }).toThrow()
+  })
+})
+
+// ✅ DO: Test type compatibility
+describe('UiButtonVariant', () => {
+  it('should accept valid variants', () => {
+    const button: UiButtonVariant = {
+      size: "md",
+      intent: "primary"
+    }
+    expect(button.size).toBe("md")
+  })
+
+  it('should reject invalid variants', () => {
+    // @ts-expect-error
+    const invalid: UiButtonVariant = { size: "invalid" }
+  })
+})
+
+// ✅ DO: Test resolver integration
+describe('resolveButtonTokens', () => {
+  it('should resolve button tokens correctly', () => {
+    const theme: UiTheme = { /* ... */ }
+    const resolved = resolveButtonTokens(theme, { mode: "static" })
+    expect(resolved.height).toBeDefined()
+  })
+})
+```
+
+### 📦 Export Patterns
+
+#### **Main Index Exports**
+```typescript
+// ✅ DO: Export all public APIs
+export * from './types'
+export * from './variants'
+export * from './tokens'
+export * from './a11y'
+export { resolveButtonTokens } from './resolver'
+
+// Re-export core types for convenience
+export type {
+  UiTheme,
+  UiResolveOptions,
+  UiResolvedTokens
+} from '@damarkuncoro/agnostic-ui-contract-core'
+```
+
+#### **Selective Exports**
+```typescript
+// ✅ DO: Use namespace exports for related items
+export const Button = {
+  variants: uiButtonVariants,
+  sizes: uiButtonSizes,
+  intents: uiButtonIntents,
+  tokens: uiButtonTokenKeys
+} as const
+```
+
+### 🔗 Ecosystem Integration
+
+#### **Dependency Management**
+```json
+// ✅ DO: Depend on contract-core
+{
+  "name": "@damarkuncoro/agnostic-ui-contract-button",
+  "dependencies": {
+    "@damarkuncoro/agnostic-ui-contract-core": "^2.1.0"
+  },
+  "peerDependencies": {
+    "typescript": "^4.9.0"
+  }
+}
+```
+
+#### **Version Alignment**
+- **Major versions**: Breaking changes in contract APIs
+- **Minor versions**: New variants, tokens, or features
+- **Patch versions**: Bug fixes and documentation updates
+
+### 🎯 Best Practices
+
+#### **Semantic Consistency**
+- Use established semantic names from core
+- Avoid framework-specific terminology
+- Prefer abstract concepts over concrete implementations
+
+#### **Type Safety**
+- Always provide union types for arrays
+- Use `as const` for readonly arrays
+- Leverage TypeScript's type inference
+
+#### **Performance**
+- Minimize resolver complexity
+- Cache expensive computations
+- Use lazy evaluation when appropriate
+
+#### **Maintainability**
+- Keep contracts focused on single components
+- Document breaking changes clearly
+- Provide migration guides
+
+### 📋 Checklist for New Contracts
+
+- [ ] **Package Structure**: Follows required directory layout
+- [ ] **Naming**: Uses correct naming conventions
+- [ ] **Types**: Comprehensive TypeScript definitions
+- [ ] **Semantics**: All variants defined as semantic arrays
+- [ ] **Resolution**: Integrates with core resolver system
+- [ ] **Documentation**: Complete README with examples
+- [ ] **Testing**: Comprehensive test coverage
+- [ ] **Exports**: Clean, organized export structure
+- [ ] **Dependencies**: Proper dependency declarations
+
+### 🤝 Community Contribution
+
+When contributing new contracts to the Agnostic UI ecosystem:
+
+1. **Follow these guidelines** strictly
+2. **Test integration** with existing contracts
+3. **Provide examples** of usage with different skins
+4. **Document limitations** and known issues
+5. **Maintain backward compatibility** when possible
+
+These standards ensure that contract packages remain **consistent**, **interoperable**, and **maintainable** across the entire Agnostic UI ecosystem.
+
+## 🔍 Contract Validation
+
+The package includes a comprehensive validation system to ensure contract packages meet Agnostic UI standards:
+
+```typescript
+import { validateContract, ContractValidationResult } from '@damarkuncoro/agnostic-ui-contract-core'
+
+const result: ContractValidationResult = validateContract('./path/to/contract')
+
+if (!result.valid) {
+  console.error('Validation failed:')
+  result.errors.forEach(error => console.error(`❌ ${error.code}: ${error.message}`))
+  result.warnings.forEach(warning => console.warn(`⚠️ ${warning.code}: ${warning.message}`))
+}
+```
+
+### Validation Checks
+
+The validator performs **comprehensive quality assurance**:
+
+#### 📁 **Structure Validation**
+- Required file presence (`package.json`, `tsconfig.json`, `README.md`, `src/index.ts`)
+- Recommended file suggestions
+- Proper directory organization
+
+#### 📦 **Package Configuration**
+- Correct package naming (`@damarkuncoro/agnostic-ui-contract-[component]`)
+- Dependency validation (must include contract-core)
+- TypeScript configuration
+
+#### 🔧 **TypeScript Standards**
+- Export validation
+- Semantic array patterns (`uiSomething = [...] as const`)
+- Type safety checks
+
+#### 🎨 **Contract-Specific Rules**
+- Semantic array validation
+- Union type generation
+- Resolver integration verification
+
+#### 📚 **Documentation Standards**
+- README completeness (Installation, Usage, API sections)
+- Code example presence
+- JSDoc compliance
+
+### Quality Assurance Pipeline
+
+For production contracts, implement this validation in your CI/CD:
+
+```bash
+# Validate contract before publishing
+npx tsx -e "
+import { validateContract } from '@damarkuncoro/agnostic-ui-contract-core'
+const result = validateContract('.')
+if (!result.valid) {
+  console.error('Contract validation failed')
+  process.exit(1)
+}
+console.log('✅ Contract validation passed')
+"
+```
+
+### Automated Quality Gates
+
+Consider integrating validation into your development workflow:
+
+- **Pre-commit hooks**: Validate before commits
+- **CI/CD pipelines**: Block releases on validation failures
+- **PR checks**: Automated validation on pull requests
+- **Package scripts**: `npm run validate` for local development
+
+## 🤝 Community Standards
+
+### Contributing Contracts
+
+When contributing new contracts to the Agnostic UI ecosystem:
+
+1. **Follow the guidelines** in this README strictly
+2. **Run validation** before submitting pull requests
+3. **Include comprehensive tests** for all exported APIs
+4. **Provide usage examples** for different integration patterns
+5. **Document breaking changes** clearly with migration guides
+
+### Ecosystem Compatibility
+
+All contracts must maintain compatibility with:
+
+- **Core resolver system** for token resolution
+- **TypeScript strict mode** for type safety
+- **Framework-agnostic design** for maximum portability
+- **Semantic consistency** across the entire ecosystem
+
+### Version Management
+
+Contract packages follow semantic versioning aligned with contract-core:
+
+- **Major versions**: Breaking API changes
+- **Minor versions**: New features, backward compatible
+- **Patch versions**: Bug fixes, documentation updates
+
 ## License
 
 MIT

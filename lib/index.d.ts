@@ -5,6 +5,7 @@ export * from "./variant";
 export * from "./a11y";
 export * from "./theme";
 export * from "./resolver";
+export * from "./validator";
 export declare const defaultTheme: {
     version: string;
     tokens: {

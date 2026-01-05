@@ -57,9 +57,88 @@ function hasUnsafePatterns(expression: string): boolean {
 }
 
 /**
- * Secure math expression evaluator with proper tokenization
+ * Simplified math expression evaluator optimized for common cases
  */
 function evaluateMathExpression(expression: string, lookup: (ref: string) => unknown): number {
+  // Fast path for simple expressions (most common case)
+  const simpleResult = trySimpleEvaluation(expression, lookup)
+  if (simpleResult !== null) {
+    return simpleResult
+  }
+
+  // Fallback to full tokenization for complex expressions
+  return evaluateComplexExpression(expression, lookup)
+}
+
+/**
+ * Fast evaluation for simple expressions like "value * 2" or "ref + 10"
+ */
+function trySimpleEvaluation(expression: string, lookup: (ref: string) => unknown): number | null {
+  const trimmed = expression.trim()
+
+  // Handle multiplication: "ref * number" or "number * ref"
+  const multMatch = trimmed.match(/^(\w+(?:\.\w+)*|\d+(?:\.\d+)?)\s*\*\s*(\w+(?:\.\w+)*|\d+(?:\.\d+)?)$/)
+  if (multMatch) {
+    const [, left, right] = multMatch
+    const leftVal = resolveValue(left, lookup)
+    const rightVal = resolveValue(right, lookup)
+    return leftVal * rightVal
+  }
+
+  // Handle addition: "ref + number" or "number + ref"
+  const addMatch = trimmed.match(/^(\w+(?:\.\w+)*|\d+(?:\.\d+)?)\s*\+\s*(\w+(?:\.\w+)*|\d+(?:\.\d+)?)$/)
+  if (addMatch) {
+    const [, left, right] = addMatch
+    const leftVal = resolveValue(left, lookup)
+    const rightVal = resolveValue(right, lookup)
+    return leftVal + rightVal
+  }
+
+  // Handle subtraction: "ref - number"
+  const subMatch = trimmed.match(/^(\w+(?:\.\w+)*|\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)$/)
+  if (subMatch) {
+    const [, left, right] = subMatch
+    const leftVal = resolveValue(left, lookup)
+    const rightVal = parseFloat(right)
+    return leftVal - rightVal
+  }
+
+  // Handle division: "ref / number"
+  const divMatch = trimmed.match(/^(\w+(?:\.\w+)*|\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)$/)
+  if (divMatch) {
+    const [, left, right] = divMatch
+    const leftVal = resolveValue(left, lookup)
+    const rightVal = parseFloat(right)
+    if (rightVal === 0) throw new Error('Division by zero')
+    return leftVal / rightVal
+  }
+
+  return null // Not a simple expression
+}
+
+/**
+ * Resolve a value that could be a number literal or reference
+ */
+function resolveValue(value: string, lookup: (ref: string) => unknown): number {
+  // Try parsing as number first
+  const num = parseFloat(value)
+  if (!isNaN(num)) {
+    return num
+  }
+
+  // Otherwise treat as reference
+  const resolved = lookup(value)
+  if (typeof resolved === 'number') {
+    return resolved
+  }
+
+  throw new Error(`Cannot resolve value: ${value}`)
+}
+
+/**
+ * Full tokenization parser for complex expressions (fallback)
+ */
+function evaluateComplexExpression(expression: string, lookup: (ref: string) => unknown): number {
   // Tokenize the expression safely
   const tokens = tokenizeExpression(expression)
 

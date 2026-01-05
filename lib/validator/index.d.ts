@@ -3,5 +3,5 @@ export { ContractValidationResult, ContractValidationError, ContractValidationWa
 /**
  * Validates a contract package against Agnostic UI standards
  */
-export declare function validateContract(contractPath: string): ContractValidationResult;
+export declare function validateContract(contractPath: string): Promise<ContractValidationResult>;
 //# sourceMappingURL=index.d.ts.map

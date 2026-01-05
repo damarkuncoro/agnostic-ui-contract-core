@@ -5,6 +5,7 @@ import { resolveMath } from "./resolve-math";
 import { resolveResponsive } from "./resolve-responsive";
 export type ResolverStep = {
     name: string;
+    priority: number;
     canHandle: (value: UiTokenValue) => boolean;
     resolve: (value: UiTokenValue, context: ResolverContext) => unknown;
 };
@@ -20,8 +21,10 @@ export declare class ResolverPipeline {
     private initializeDefaultSteps;
     addStep(step: ResolverStep): this;
     removeStep(name: string): this;
+    private sortSteps;
     resolve(value: UiTokenValue, mode: UiResolveMode, lookup: (ref: string) => unknown, breakpoint?: string): unknown;
     getSteps(): readonly ResolverStep[];
+    getStep(name: string): ResolverStep | undefined;
 }
 export declare namespace Resolver {
     const pipeline: ResolverPipeline;

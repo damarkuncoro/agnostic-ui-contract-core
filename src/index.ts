@@ -7,6 +7,9 @@ export * from "./theme"
 export * from "./resolver"
 export * from "./validator"
 
+// NOTE: Runtime validation has been moved to build-time only.
+// Use the CLI validator for development: npx tsx scripts/validate-contracts.js
+
 // Simple default theme for development
 export const defaultTheme = {
   version: "2.1",

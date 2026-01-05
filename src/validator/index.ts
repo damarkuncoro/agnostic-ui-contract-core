@@ -1,21 +1,30 @@
 // src/validator/index.ts
 
-import * as fs from 'fs'
+import * as fs from 'fs/promises'
+import * as fsSync from 'fs'
 import * as path from 'path'
-import { ContractValidationResult, ContractValidationError, ContractValidationWarning } from './types'
+import {
+    ContractValidationResult,
+    ContractValidationError,
+    ContractValidationWarning } from './types'
 
-export { ContractValidationResult, ContractValidationError, ContractValidationWarning } from './types'
+export { 
+    ContractValidationResult, 
+    ContractValidationError, 
+    ContractValidationWarning } from './types'
 
 /**
  * Validates a contract package against Agnostic UI standards
  */
-export function validateContract(contractPath: string): ContractValidationResult {
+export async function validateContract(contractPath: string): Promise<ContractValidationResult> {
   const errors: ContractValidationError[] = []
   const warnings: ContractValidationWarning[] = []
 
   try {
     // Check if path exists
-    if (!fs.existsSync(contractPath)) {
+    try {
+      await fs.access(contractPath)
+    } catch {
       errors.push({
         type: 'error',
         code: 'PATH_NOT_FOUND',
@@ -26,22 +35,22 @@ export function validateContract(contractPath: string): ContractValidationResult
     }
 
     // Validate package structure
-    validatePackageStructure(contractPath, errors, warnings)
+    await validatePackageStructure(contractPath, errors, warnings)
 
     // Validate package.json
-    validatePackageJson(contractPath, errors, warnings)
+    await validatePackageJson(contractPath, errors, warnings)
 
     // Validate TypeScript files
-    validateTypeScriptFiles(contractPath, errors, warnings)
+    await validateTypeScriptFiles(contractPath, errors, warnings)
 
     // Validate semantic arrays
-    validateSemanticArrays(contractPath, errors, warnings)
+    await validateSemanticArrays(contractPath, errors, warnings)
 
     // Validate exports
-    validateExports(contractPath, errors, warnings)
+    await validateExports(contractPath, errors, warnings)
 
     // Validate documentation
-    validateDocumentation(contractPath, errors, warnings)
+    await validateDocumentation(contractPath, errors, warnings)
 
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
@@ -63,7 +72,7 @@ export function validateContract(contractPath: string): ContractValidationResult
 /**
  * Validates the required package structure
  */
-function validatePackageStructure(contractPath: string, errors: ContractValidationError[], warnings: ContractValidationWarning[]) {
+async function validatePackageStructure(contractPath: string, errors: ContractValidationError[], warnings: ContractValidationWarning[]) {
   const requiredFiles = [
     'package.json',
     'tsconfig.json',
@@ -81,7 +90,9 @@ function validatePackageStructure(contractPath: string, errors: ContractValidati
   // Check required files
   for (const file of requiredFiles) {
     const filePath = path.join(contractPath, file)
-    if (!fs.existsSync(filePath)) {
+    try {
+      await fs.access(filePath)
+    } catch {
       errors.push({
         type: 'error',
         code: 'MISSING_REQUIRED_FILE',
@@ -94,7 +105,9 @@ function validatePackageStructure(contractPath: string, errors: ContractValidati
   // Check recommended files
   for (const file of recommendedFiles) {
     const filePath = path.join(contractPath, file)
-    if (!fs.existsSync(filePath)) {
+    try {
+      await fs.access(filePath)
+    } catch {
       warnings.push({
         type: 'warning',
         code: 'MISSING_RECOMMENDED_FILE',
@@ -106,9 +119,9 @@ function validatePackageStructure(contractPath: string, errors: ContractValidati
 
   // Check src directory structure
   const srcPath = path.join(contractPath, 'src')
-  if (fs.existsSync(srcPath)) {
-    const srcFiles = fs.readdirSync(srcPath)
-    const tsFiles = srcFiles.filter(f => f.endsWith('.ts'))
+  try {
+    const srcFiles = await fs.readdir(srcPath)
+    const tsFiles = srcFiles.filter((f: string) => f.endsWith('.ts'))
 
     if (tsFiles.length === 0) {
       errors.push({
@@ -118,21 +131,26 @@ function validatePackageStructure(contractPath: string, errors: ContractValidati
         file: srcPath
       })
     }
+  } catch {
+    // src directory doesn't exist, already handled above
   }
 }
 
 /**
  * Validates package.json configuration
  */
-function validatePackageJson(contractPath: string, errors: ContractValidationError[], warnings: ContractValidationWarning[]) {
+async function validatePackageJson(contractPath: string, errors: ContractValidationError[], warnings: ContractValidationWarning[]) {
   const packageJsonPath = path.join(contractPath, 'package.json')
 
-  if (!fs.existsSync(packageJsonPath)) {
+  try {
+    await fs.access(packageJsonPath)
+  } catch {
     return // Already reported in structure validation
   }
 
   try {
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
+    const packageJsonContent = await fs.readFile(packageJsonPath, 'utf-8')
+    const packageJson = JSON.parse(packageJsonContent)
 
     // Check package name
     if (!packageJson.name) {
@@ -188,20 +206,22 @@ function validatePackageJson(contractPath: string, errors: ContractValidationErr
 /**
  * Validates TypeScript files for proper structure
  */
-function validateTypeScriptFiles(contractPath: string, errors: ContractValidationError[], warnings: ContractValidationWarning[]) {
+async function validateTypeScriptFiles(contractPath: string, errors: ContractValidationError[], warnings: ContractValidationWarning[]) {
   const srcPath = path.join(contractPath, 'src')
 
-  if (!fs.existsSync(srcPath)) {
+  try {
+    await fs.access(srcPath)
+  } catch {
     return
   }
 
-  const tsFiles = fs.readdirSync(srcPath).filter(f => f.endsWith('.ts'))
+  const tsFiles = (await fs.readdir(srcPath)).filter((f: string) => f.endsWith('.ts'))
 
   for (const tsFile of tsFiles) {
     const filePath = path.join(srcPath, tsFile)
 
     try {
-      const content = fs.readFileSync(filePath, 'utf-8')
+      const content = await fs.readFile(filePath, 'utf-8')
 
       // Check for proper exports
       if (!content.includes('export')) {
@@ -239,20 +259,22 @@ function validateTypeScriptFiles(contractPath: string, errors: ContractValidatio
 /**
  * Validates semantic arrays follow proper patterns
  */
-function validateSemanticArrays(contractPath: string, errors: ContractValidationError[], warnings: ContractValidationWarning[]) {
+async function validateSemanticArrays(contractPath: string, errors: ContractValidationError[], warnings: ContractValidationWarning[]) {
   const srcPath = path.join(contractPath, 'src')
 
-  if (!fs.existsSync(srcPath)) {
+  try {
+    await fs.access(srcPath)
+  } catch {
     return
   }
 
-  const tsFiles = fs.readdirSync(srcPath).filter(f => f.endsWith('.ts'))
+  const tsFiles = (await fs.readdir(srcPath)).filter((f: string) => f.endsWith('.ts'))
 
   for (const tsFile of tsFiles) {
     const filePath = path.join(srcPath, tsFile)
 
     try {
-      const content = fs.readFileSync(filePath, 'utf-8')
+      const content = await fs.readFile(filePath, 'utf-8')
 
       // Look for semantic arrays (uiSomething = [...] as const)
       const semanticArrayRegex = /ui\w+\s*=\s*\[.*?\]\s*as\s+const/g
@@ -284,15 +306,17 @@ function validateSemanticArrays(contractPath: string, errors: ContractValidation
 /**
  * Validates export patterns
  */
-function validateExports(contractPath: string, errors: ContractValidationError[], warnings: ContractValidationWarning[]) {
+async function validateExports(contractPath: string, errors: ContractValidationError[], warnings: ContractValidationWarning[]) {
   const indexPath = path.join(contractPath, 'src/index.ts')
 
-  if (!fs.existsSync(indexPath)) {
+  try {
+    await fs.access(indexPath)
+  } catch {
     return
   }
 
   try {
-    const content = fs.readFileSync(indexPath, 'utf-8')
+    const content = await fs.readFile(indexPath, 'utf-8')
 
     // Check for proper export patterns
     if (!content.includes('export * from')) {
@@ -328,10 +352,12 @@ function validateExports(contractPath: string, errors: ContractValidationError[]
 /**
  * Validates documentation completeness
  */
-function validateDocumentation(contractPath: string, errors: ContractValidationError[], warnings: ContractValidationWarning[]) {
+async function validateDocumentation(contractPath: string, errors: ContractValidationError[], warnings: ContractValidationWarning[]) {
   const readmePath = path.join(contractPath, 'README.md')
 
-  if (!fs.existsSync(readmePath)) {
+  try {
+    await fs.access(readmePath)
+  } catch {
     errors.push({
       type: 'error',
       code: 'MISSING_README',
@@ -342,7 +368,7 @@ function validateDocumentation(contractPath: string, errors: ContractValidationE
   }
 
   try {
-    const content = fs.readFileSync(readmePath, 'utf-8')
+    const content = await fs.readFile(readmePath, 'utf-8')
 
     const requiredSections = [
       'Installation',

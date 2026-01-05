@@ -8,7 +8,7 @@ export * from "./resolver"
 export * from "./validator"
 
 // NOTE: Runtime validation has been moved to build-time only.
-// Use the CLI validator for development: npx tsx scripts/validate-contracts.js
+// Use the CLI validator for development: npx agnostic-ui validate
 
 // Simple default theme for development
 export const defaultTheme = {

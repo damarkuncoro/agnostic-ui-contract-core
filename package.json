@@ -1,7 +1,7 @@
 {
   "name": "@damarkuncoro/agnostic-ui-contract-core",
   "version": "0.0.1",
-  "description": "Core contracts and types for Agnostic UI components",
+  "description": "Core contract utilities and base types for Agnostic UI",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "exports": {
@@ -23,19 +23,24 @@
   ],
   "scripts": {
     "build": "tsc",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test": "vitest",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix"
   },
   "keywords": [
     "ui",
-    "design-system",
-    "typescript",
     "contracts",
-    "agnostic"
+    "agnostic",
+    "types",
+    "utilities"
   ],
   "author": "Agnostic UI Team",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0",
+    "@types/node": "^20.0.0"
   },
   "repository": {
     "type": "git",
@@ -44,6 +49,5 @@
   "bugs": {
     "url": "https://github.com/damarkuncoro/agnostic-ui-contract-core/issues"
   },
-  "homepage": "https://github.com/damarkuncoro/agnostic-ui-contract-core#readme",
-  "packageManager": "pnpm@10.26.0+sha512.3b3f6c725ebe712506c0ab1ad4133cf86b1f4b687effce62a9b38b4d72e3954242e643190fc51fa1642949c735f403debd44f5cb0edd657abe63a8b6a7e1e402"
+  "homepage": "https://github.com/damarkuncoro/agnostic-ui-contract-core#readme"
 }

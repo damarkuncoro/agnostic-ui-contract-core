@@ -1,14 +1,25 @@
 /**
  * Contract-Core Application Bootstrap
- * Sets up dependency injection container for contract operations
+ * Sets up dependency injection container for contract operations using DDD principles
  */
-declare class ContractCoreContainer {
+import { CreateContractUseCase } from './application/use-cases/CreateContractUseCase';
+import { SchemaContractValidator } from './infrastructure/validators/SchemaContractValidator';
+import { IContractValidator } from './domain/contract/services/IContractValidator';
+declare class ContractCoreServiceContainer {
+    private static instance;
     private services;
-    register<T>(key: string, factory: () => T): void;
-    registerSingleton<T>(key: string, instance: T): void;
-    resolve<T>(key: string): T;
+    private constructor();
+    static getInstance(): ContractCoreServiceContainer;
+    private initializeServices;
+    get<T>(serviceName: string): T;
+    getCreateContractUseCase(): CreateContractUseCase;
+    getSchemaContractValidator(): SchemaContractValidator;
+    getContractValidators(): IContractValidator[];
 }
-export declare const contractCoreContainer: ContractCoreContainer;
-export declare function getContractCoreService<T>(key: string): T;
+export declare const contractCoreServiceContainer: ContractCoreServiceContainer;
+export declare function getCreateContractUseCase(): CreateContractUseCase;
+export declare function getSchemaContractValidator(): SchemaContractValidator;
+export declare function getContractValidators(): IContractValidator[];
+export declare function getContractCoreService<T>(serviceName: string): T;
 export {};
 //# sourceMappingURL=bootstrap.d.ts.map

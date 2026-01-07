@@ -45,12 +45,13 @@ yarn add @damarkuncoro/agnostic-ui-contract-core
 The contract core provides:
 
 ### 🏛️ **DDD Architecture (New)**
-- **Domain Entities**: `Variant`, `ContractName` with business logic
-- **Value Objects**: Immutable objects with validation (`VariantType`, `ContractName`)
-- **Domain Services**: Business logic coordination (`VariantFactory`)
-- **Use Cases**: Application orchestration (`CreateVariantUseCase`)
-- **Repositories**: Data persistence abstraction (`VariantRepository`)
-- **Domain Events**: Business event notifications
+- **Domain Entities**: `Contract`, `Variant`, `ContractName` with business logic
+- **Value Objects**: Immutable objects with validation (`ContractName`, `VariantType`)
+- **Domain Services**: Business logic coordination (`IContractValidator`)
+- **Use Cases**: Application orchestration (`CreateContractUseCase`)
+- **Infrastructure**: Schema validation (`SchemaContractValidator`)
+- **Domain Events**: Business event notifications (`ContractCreatedEvent`, `ContractValidatedEvent`)
+- **Dependency Injection**: Clean service container with singleton pattern
 
 ### 🔄 **Legacy Compatibility (Maintained)**
 - **Base Types**: Fundamental interfaces for contracts, properties, and validation

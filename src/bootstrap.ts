@@ -1,49 +1,80 @@
 /**
  * Contract-Core Application Bootstrap
- * Sets up dependency injection container for contract operations
+ * Sets up dependency injection container for contract operations using DDD principles
  */
 
-import { VariantFactory } from './domain/variant/services/VariantFactory'
-import { CreateVariantUseCaseImpl } from './application/use-cases/CreateVariantUseCase'
-import { InMemoryVariantRepository, VariantRepositoryFactory } from './infrastructure/repositories/VariantRepository'
+import { CreateContractUseCase } from './application/use-cases/CreateContractUseCase';
+import { SchemaContractValidator } from './infrastructure/validators/SchemaContractValidator';
+import { IContractValidator } from './domain/contract/services/IContractValidator';
 
-// Simple container for contract-core dependencies
-class ContractCoreContainer {
-  private services = new Map<string, any>()
+// Service container for dependency injection
+class ContractCoreServiceContainer {
+  private static instance: ContractCoreServiceContainer;
+  private services: Map<string, any> = new Map();
 
-  register<T>(key: string, factory: () => T): void {
-    this.services.set(key, factory)
+  private constructor() {
+    this.initializeServices();
   }
 
-  registerSingleton<T>(key: string, instance: T): void {
-    this.services.set(key, () => instance)
-  }
-
-  resolve<T>(key: string): T {
-    const factory = this.services.get(key)
-    if (!factory) {
-      throw new Error(`Service ${key} not registered`)
+  static getInstance(): ContractCoreServiceContainer {
+    if (!ContractCoreServiceContainer.instance) {
+      ContractCoreServiceContainer.instance = new ContractCoreServiceContainer();
     }
-    return factory()
+    return ContractCoreServiceContainer.instance;
+  }
+
+  private initializeServices(): void {
+    // Infrastructure - Contract Validators
+    const schemaValidator = new SchemaContractValidator();
+    this.services.set('SchemaContractValidator', schemaValidator);
+
+    // Contract Validators Array
+    const contractValidators: IContractValidator[] = [schemaValidator];
+    this.services.set('ContractValidators', contractValidators);
+
+    // Application Services
+    this.services.set('CreateContractUseCase', new CreateContractUseCase(contractValidators));
+  }
+
+  get<T>(serviceName: string): T {
+    const service = this.services.get(serviceName);
+    if (!service) {
+      throw new Error(`Service not found: ${serviceName}`);
+    }
+    return service;
+  }
+
+  // Convenience methods for commonly used services
+  getCreateContractUseCase(): CreateContractUseCase {
+    return this.get<CreateContractUseCase>('CreateContractUseCase');
+  }
+
+  getSchemaContractValidator(): SchemaContractValidator {
+    return this.get<SchemaContractValidator>('SchemaContractValidator');
+  }
+
+  getContractValidators(): IContractValidator[] {
+    return this.get<IContractValidator[]>('ContractValidators');
   }
 }
 
-// Global contract-core container
-export const contractCoreContainer = new ContractCoreContainer()
+// Export singleton instance
+export const contractCoreServiceContainer = ContractCoreServiceContainer.getInstance();
 
-// Register domain services
-contractCoreContainer.registerSingleton('IVariantFactory', new VariantFactory())
+// Export convenience functions
+export function getCreateContractUseCase(): CreateContractUseCase {
+  return contractCoreServiceContainer.getCreateContractUseCase();
+}
 
-// Register infrastructure services
-contractCoreContainer.registerSingleton('IVariantRepository', VariantRepositoryFactory.createInMemory())
+export function getSchemaContractValidator(): SchemaContractValidator {
+  return contractCoreServiceContainer.getSchemaContractValidator();
+}
 
-// Register application services
-contractCoreContainer.register('CreateVariantUseCase', () => {
-  const variantFactory = contractCoreContainer.resolve<VariantFactory>('IVariantFactory')
-  return new CreateVariantUseCaseImpl(variantFactory)
-})
+export function getContractValidators(): IContractValidator[] {
+  return contractCoreServiceContainer.getContractValidators();
+}
 
-// Helper function to get services
-export function getContractCoreService<T>(key: string): T {
-  return contractCoreContainer.resolve<T>(key)
+// Export service locator function for generic access
+export function getContractCoreService<T>(serviceName: string): T {
+  return contractCoreServiceContainer.get<T>(serviceName);
 }

@@ -9,16 +9,24 @@
 // Initialize bootstrap
 import './bootstrap'
 
-// -----------------------------------------------------------------
-// Domain Layer Exports
-// -----------------------------------------------------------------
+// =================================================================
+// DDD ARCHITECTURE EXPORTS (New)
+// =================================================================
 
-// Value Objects
-export { ContractName } from './domain/shared/value-objects/ContractName'
-export { VariantType } from './domain/shared/value-objects/VariantType'
+// Domain Layer
+export { Contract, ContractStatus, ContractCategory } from './domain/contract/entities/Contract';
+export { ContractName } from './domain/shared/value-objects/ContractName';
 
-// Entities
-export { Variant } from './domain/variant/entities/Variant'
+// Application Layer
+export { CreateContractUseCase } from './application/use-cases/CreateContractUseCase';
+export type {
+  CreateContractInput,
+  CreateContractOutput
+} from './application/use-cases/CreateContractUseCase';
+
+// Infrastructure Layer
+export { SchemaContractValidator } from './infrastructure/validators/SchemaContractValidator';
+export type { IContractValidator } from './domain/contract/services/IContractValidator';
 
 // Domain Events
 export type {
@@ -27,33 +35,23 @@ export type {
   ContractValidatedEvent,
   VariantCreatedEvent,
   PropSchemaCreatedEvent
-} from './domain/shared/events/DomainEvent'
+} from './domain/shared/events/DomainEvent';
 
-// Domain Services
-export type { IVariantFactory } from './domain/variant/services/VariantFactory'
+// Dependency Injection
+export {
+  getCreateContractUseCase,
+  getSchemaContractValidator,
+  getContractValidators,
+  getContractCoreService
+} from './bootstrap';
 
-// -----------------------------------------------------------------
-// Application Layer Exports
-// -----------------------------------------------------------------
-
-// Use Cases
-export type { ICreateVariantUseCase } from './application/use-cases/CreateVariantUseCase'
-export { CreateVariantUseCaseImpl } from './application/use-cases/CreateVariantUseCase'
-
-// -----------------------------------------------------------------
-// Infrastructure Layer Exports
-// -----------------------------------------------------------------
-
-// Repositories
-export type { IVariantRepository } from './infrastructure/repositories/VariantRepository'
-
-// -----------------------------------------------------------------
-// Legacy Compatibility Layer (will be deprecated)
-// -----------------------------------------------------------------
+// =================================================================
+// LEGACY COMPATIBILITY EXPORTS (Maintained)
+// =================================================================
 
 // Re-export legacy types for backward compatibility
 export type {
-  ContractCategory,
+  ContractCategory as LegacyContractCategory,
   ContractDefinition,
   PropSchema,
   ChildrenRules,
@@ -121,19 +119,167 @@ export const uiA11yKeyboardActions: readonly string[] = [
   'Shift+Tab'
 ] as const;
 
-// Legacy utility functions (deprecated - use domain services and use cases)
-// These functions are defined below in this file
+// =================================================================
+// MIGRATION HELPERS
+// =================================================================
 
-// -----------------------------------------------------------------
-// Convenience Exports
-// -----------------------------------------------------------------
+import { Contract, ContractCategory } from './domain/contract/entities/Contract';
+import { ContractName } from './domain/shared/value-objects/ContractName';
+import { getCreateContractUseCase } from './bootstrap';
+import type {
+  CreateContractInput,
+  CreateContractVariantInput,
+  CreateContractPropInput
+} from './application/use-cases/CreateContractUseCase';
 
-// Factory functions for common operations
-import { getContractCoreService } from './bootstrap'
-export { getContractCoreService }
+/**
+ * Migrates legacy contract creation to DDD Contract entity
+ * @param legacyConfig Legacy contract configuration
+ * @returns DDD Contract entity
+ */
+export function createContractDDD(legacyConfig: {
+  name: string;
+  category?: string;
+  version?: string;
+  description?: string;
+  variants?: any[];
+  props?: any[];
+  accessibility?: any;
+  validation?: any;
+  metadata?: Record<string, any>;
+}): Contract {
+  // Map legacy category to new enum
+  const categoryMap: Record<string, ContractCategory> = {
+    'core': ContractCategory.CORE,
+    'component': ContractCategory.COMPONENT,
+    'theme': ContractCategory.THEME,
+    'skin': ContractCategory.SKIN,
+    'utility': ContractCategory.UTILITY
+  };
 
-// Quick access to standard variants
+  const category = categoryMap[legacyConfig.category || 'component'] || ContractCategory.COMPONENT;
+
+  return Contract.create({
+    name: legacyConfig.name,
+    category,
+    version: legacyConfig.version,
+    description: legacyConfig.description,
+    variants: legacyConfig.variants,
+    props: legacyConfig.props,
+    accessibility: legacyConfig.accessibility,
+    validation: legacyConfig.validation,
+    metadata: legacyConfig.metadata
+  });
+}
+
+/**
+ * Migrates legacy contract validation to DDD use case
+ * @param legacyConfig Legacy contract configuration
+ * @returns Promise resolving to validation result
+ */
+export async function validateContractDDD(legacyConfig: {
+  name: string;
+  category?: string;
+  version?: string;
+  description?: string;
+  variants?: any[];
+  props?: any[];
+  accessibility?: any;
+  validation?: any;
+  metadata?: Record<string, any>;
+}): Promise<{ isValid: boolean; errors: string[]; warnings: string[]; contract: Contract }> {
+  const contract = createContractDDD(legacyConfig);
+  const validation = contract.validate();
+
+  return {
+    isValid: validation.isValid,
+    errors: validation.errors,
+    warnings: validation.warnings,
+    contract
+  };
+}
+
+/**
+ * Creates a standard component contract using DDD
+ * @param name Contract name
+ * @param options Additional options
+ * @returns CreateContractInput for standard component
+ */
+export function createStandardComponentContract(name: string, options: {
+  includeAccessibility?: boolean;
+  includeValidation?: boolean;
+  customVariants?: CreateContractVariantInput[];
+  customProps?: CreateContractPropInput[];
+} = {}): CreateContractInput {
+  const useCase = getCreateContractUseCase();
+  return useCase.createStandardComponentContract(name, options);
+}
+
+/**
+ * Converts DDD Contract entity back to legacy format
+ * @param contract DDD Contract entity
+ * @returns Legacy contract format
+ */
+export function convertContractToLegacy(contract: Contract): {
+  name: string;
+  category: string;
+  version: string;
+  description?: string;
+  variants: any[];
+  props: any[];
+  accessibility: any;
+  validation: any;
+  metadata: Record<string, any>;
+  status: string;
+} {
+  // Map new category enum to legacy string
+  const categoryMap: Record<ContractCategory, string> = {
+    [ContractCategory.CORE]: 'core',
+    [ContractCategory.COMPONENT]: 'component',
+    [ContractCategory.THEME]: 'theme',
+    [ContractCategory.SKIN]: 'skin',
+    [ContractCategory.UTILITY]: 'utility'
+  };
+
+  return {
+    name: contract.name.value,
+    category: categoryMap[contract.category],
+    version: contract.version,
+    description: contract.description,
+    variants: [...contract.variants],
+    props: [...contract.props],
+    accessibility: contract.accessibility,
+    validation: contract.validation,
+    metadata: contract.metadata,
+    status: contract.status
+  };
+}
+
+/**
+ * Checks if a contract configuration is valid using DDD validation
+ * @param config Contract configuration
+ * @returns Validation result
+ */
+export function isValidContractConfiguration(config: any): boolean {
+  try {
+    const contract = createContractDDD(config);
+    const validation = contract.validate();
+    return validation.isValid;
+  } catch (error) {
+    return false;
+  }
+}
+
+// =================================================================
+// LEGACY UTILITY FUNCTIONS (Deprecated)
+// =================================================================
+
+// Quick access to standard variants (deprecated - use DDD services)
 export function getStandardVariants() {
-  const variantFactory = getContractCoreService<any>('IVariantFactory')
-  return variantFactory.createStandardVariants()
+  return {
+    sizes: uiSizes,
+    intents: uiIntents,
+    tones: uiTones,
+    emphases: uiEmphases
+  };
 }

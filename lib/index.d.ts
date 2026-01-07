@@ -1,148 +1,73 @@
-export * from "./version";
-export * from "./tokens";
-export * from "./state";
-export * from "./variant";
-export * from "./a11y";
-export * from "./theme";
-export * from "./resolver";
-export * from "./validator";
-export declare const defaultTheme: {
-    version: string;
-    tokens: {
-        color: {
-            palette: {
-                neutral: {
-                    50: string;
-                    100: string;
-                    200: string;
-                    300: string;
-                    400: string;
-                    500: string;
-                    600: string;
-                    700: string;
-                    800: string;
-                    900: string;
-                };
-                primary: {
-                    500: string;
-                };
-                secondary: {
-                    500: string;
-                };
-            };
-            text: {
-                primary: string;
-                secondary: string;
-                muted: string;
-                inverse: string;
-                disabled: string;
-            };
-            background: {
-                surface: string;
-                elevated: string;
-                muted: string;
-                inverse: string;
-            };
-            border: {
-                default: string;
-                subtle: string;
-                strong: string;
-                focus: string;
-            };
-        };
-        spacing: {
-            scale: {
-                0: string;
-                1: string;
-                2: string;
-                3: string;
-                4: string;
-                5: string;
-                6: string;
-                8: string;
-                10: string;
-                12: string;
-                16: string;
-                20: string;
-                24: string;
-                32: string;
-            };
-            semantic: {
-                xs: string;
-                sm: string;
-                md: string;
-                lg: string;
-                xl: string;
-            };
-        };
-        radius: {
-            scale: {
-                0: string;
-                1: string;
-                2: string;
-                3: string;
-                4: string;
-                6: string;
-                8: string;
-                12: string;
-                16: string;
-                full: string;
-            };
-            semantic: {
-                none: string;
-                sm: string;
-                md: string;
-                lg: string;
-                full: string;
-            };
-        };
-        typography: {
-            fontSize: {
-                xs: string;
-                sm: string;
-                base: string;
-                lg: string;
-                xl: string;
-                "2xl": string;
-                "3xl": string;
-                "4xl": string;
-                "5xl": string;
-            };
-            fontWeight: {
-                thin: string;
-                light: string;
-                normal: string;
-                medium: string;
-                semibold: string;
-                bold: string;
-                extrabold: string;
-                black: string;
-            };
-            lineHeight: {
-                none: string;
-                tight: string;
-                snug: string;
-                normal: string;
-                relaxed: string;
-                loose: string;
-            };
-        };
-        shadow: {
-            sm: string;
-            md: string;
-            lg: string;
-            xl: string;
-            "2xl": string;
-        };
-        zIndex: {
-            0: string;
-            10: string;
-            20: string;
-            30: string;
-            40: string;
-            50: string;
-            auto: string;
-        };
-    };
+import type { ContractCategory, ContractDefinition, PropSchema, ChildrenRules, AccessibilityRules, UiVariantSize, UiVariantIntent, UiVariantTone, UiVariantEmphasis, UiA11yRole, UiA11yKeyboardAction } from './types';
+export type { ContractCategory, ContractDefinition, PropSchema, ChildrenRules, AccessibilityRules, UiVariantSize, UiVariantIntent, UiVariantTone, UiVariantEmphasis, UiA11yRole, UiA11yKeyboardAction, ContractProps, ContractEvents } from './types';
+/**
+ * Standard size variants available across all components
+ */
+export declare const uiSizes: readonly UiVariantSize[];
+/**
+ * Standard intent variants for interactive components
+ */
+export declare const uiIntents: readonly UiVariantIntent[];
+/**
+ * Standard tone variants for visual weight adjustment
+ */
+export declare const uiTones: readonly UiVariantTone[];
+/**
+ * Standard emphasis variants for prominence adjustment
+ */
+export declare const uiEmphases: readonly UiVariantEmphasis[];
+/**
+ * Standard ARIA roles that components can implement
+ */
+export declare const uiA11yRoles: readonly UiA11yRole[];
+/**
+ * Standard keyboard actions that components should support
+ */
+export declare const uiA11yKeyboardActions: readonly UiA11yKeyboardAction[];
+/**
+ * Creates a standardized property schema object
+ */
+export declare function createPropSchema(options: PropSchema): PropSchema;
+/**
+ * Creates accessibility rules for a component
+ */
+export declare function createA11yRules(rules: AccessibilityRules): AccessibilityRules;
+/**
+ * Creates children rules for a component
+ */
+export declare function createChildrenRules(rules: ChildrenRules): ChildrenRules;
+/**
+ * Validates that a value matches a property schema
+ */
+export declare function validatePropValue(value: any, schema: PropSchema): boolean;
+/**
+ * Gets the default value for a property schema
+ */
+export declare function getPropDefault(schema: PropSchema): any;
+/**
+ * Checks if a property is required
+ */
+export declare function isPropRequired(schema: PropSchema): boolean;
+/**
+ * Helper to create a complete contract definition with sensible defaults
+ */
+export declare function createContract(options: {
+    name: string;
+    displayName: string;
+    category: ContractCategory;
+    propsSchema?: Record<string, PropSchema>;
+    variants?: Record<string, string[]>;
+    events?: string[];
+    accessibility?: Partial<AccessibilityRules>;
+    children?: ChildrenRules;
+    version?: string;
+    metadata?: Record<string, any>;
+}): ContractDefinition;
+/**
+ * Validates a complete contract definition
+ */
+export declare function validateContract(contract: ContractDefinition): {
+    valid: boolean;
+    errors: string[];
 };
 //# sourceMappingURL=index.d.ts.map

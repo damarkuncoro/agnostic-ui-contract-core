@@ -3,16 +3,19 @@
  * Represents a variant with its type and allowed values
  */
 
+import { BaseEntity } from '../../shared/BaseEntity'
 import { VariantType } from '../../shared/value-objects/VariantType'
 import { VariantCreatedEvent } from '../../shared/events/DomainEvent'
 
-export class Variant {
+export class Variant extends BaseEntity {
   private readonly _values: string[]
 
   constructor(
+    id: string,
     private readonly _type: VariantType,
     values: string[]
   ) {
+    super(id)
     if (!Array.isArray(values) || values.length === 0) {
       throw new Error('Variant must have at least one value')
     }
@@ -27,25 +30,25 @@ export class Variant {
   }
 
   static create(type: VariantType, values: string[]): Variant {
-    const variant = new Variant(type, values)
+    const variant = new Variant(type.value, type, values)
     // Domain event would be published by application service
     return variant
   }
 
   static createSizeVariant(values: string[]): Variant {
-    return new Variant(VariantType.SIZE, values)
+    return new Variant(VariantType.SIZE.value, VariantType.SIZE, values)
   }
 
   static createIntentVariant(values: string[]): Variant {
-    return new Variant(VariantType.INTENT, values)
+    return new Variant(VariantType.INTENT.value, VariantType.INTENT, values)
   }
 
   static createToneVariant(values: string[]): Variant {
-    return new Variant(VariantType.TONE, values)
+    return new Variant(VariantType.TONE.value, VariantType.TONE, values)
   }
 
   static createEmphasisVariant(values: string[]): Variant {
-    return new Variant(VariantType.EMPHASIS, values)
+    return new Variant(VariantType.EMPHASIS.value, VariantType.EMPHASIS, values)
   }
 
   // Getters
@@ -71,6 +74,7 @@ export class Variant {
       throw new Error(`Value '${value}' already exists in variant`)
     }
     this._values.push(value)
+    this.markAsModified()
   }
 
   removeValue(value: string): boolean {
@@ -84,6 +88,7 @@ export class Variant {
     }
 
     this._values.splice(index, 1)
+    this.markAsModified()
     return true
   }
 

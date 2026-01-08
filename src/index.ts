@@ -1,9 +1,19 @@
 // =================================================================
-// Agnostic UI Contract Core - Domain-Driven Architecture
+// AGNOSTIC UI CONTRACT CORE - STRATEGIC FOUNDATION
+// =================================================================
+// 🚀 STRATEGIC POSITION: This is NOT just another UI framework package.
 //
-// This package provides the foundational types, utilities, and constants
-// that all contracts in the Agnostic UI ecosystem build upon. It ensures
-// consistency and provides common functionality across all component contracts.
+// This package serves as the architectural cornerstone of the entire Agnostic UI
+// ecosystem, implementing Domain-Driven Design principles at scale. It establishes
+// the contract between business domains and UI implementation, enabling:
+//
+// • Framework Agnosticism: UI components can be built with any framework
+// • Domain Integrity: Business rules are preserved across all implementations
+// • Scalable Architecture: Clean separation of concerns for enterprise-scale UI
+// • Type Safety: Compile-time guarantees across the entire component ecosystem
+//
+// Every component contract in the system extends from this foundation, ensuring
+// consistency, maintainability, and architectural integrity across all UI layers.
 // =================================================================
 
 // Initialize bootstrap
@@ -13,22 +23,52 @@ import './bootstrap'
 // DDD ARCHITECTURE EXPORTS (New)
 // =================================================================
 
-// Domain Layer
+// Domain Layer - Why It Matters:
+// The domain layer contains the core business logic and rules. Entities represent
+// business concepts with identity and behavior, while Value Objects represent
+// immutable descriptive aspects. This separation ensures business rules are
+// preserved and testable independently of infrastructure concerns.
 export { Contract, ContractStatus, ContractCategory } from './domain/contract/entities/Contract';
 export { ContractName } from './domain/shared/value-objects/ContractName';
+export { Variant } from './domain/variant/entities/Variant';
+export { VariantType } from './domain/shared/value-objects/VariantType';
 
-// Application Layer
+// Application Layer - Why It Matters:
+// Use Cases orchestrate complex business operations and coordinate between
+// domain objects. They encapsulate application-specific logic while keeping
+// the domain layer pure and focused on business rules.
 export { CreateContractUseCase } from './application/use-cases/CreateContractUseCase';
 export type {
   CreateContractInput,
   CreateContractOutput
 } from './application/use-cases/CreateContractUseCase';
+export { CreateVariantUseCaseImpl as CreateVariantUseCase } from './application/use-cases/CreateVariantUseCase';
+export type {
+  CreateVariantRequest,
+  CreateVariantResponse,
+  ICreateVariantUseCase
+} from './application/use-cases/CreateVariantUseCase';
 
-// Infrastructure Layer
+// Infrastructure Layer - Why It Matters:
+// Infrastructure concerns (persistence, external services, frameworks) are
+// isolated here through interfaces and adapters. This allows the domain and
+// application layers to remain independent and testable.
 export { SchemaContractValidator } from './infrastructure/validators/SchemaContractValidator';
 export type { IContractValidator } from './domain/contract/services/IContractValidator';
+export { InMemoryVariantRepository, VariantRepositoryFactory } from './infrastructure/repositories/VariantRepository';
+export type { IVariantRepository } from './infrastructure/repositories/VariantRepository';
 
-// Domain Events
+// Domain Services - Why It Matters:
+// Domain Services contain business logic that doesn't naturally belong to
+// entities or value objects. They orchestrate complex operations across
+// multiple domain objects while keeping business rules centralized.
+export { VariantFactory } from './domain/variant/services/VariantFactory';
+export type { IVariantFactory } from './domain/variant/services/VariantFactory';
+
+// Domain Events - Why It Matters:
+// Domain Events capture significant business moments and enable loose coupling between
+// bounded contexts. They allow other parts of the system to react to important changes
+// without tight dependencies, supporting eventual consistency and event-driven architecture.
 export type {
   ContractDomainEvent,
   ContractCreatedEvent,
@@ -37,7 +77,11 @@ export type {
   PropSchemaCreatedEvent
 } from './domain/shared/events/DomainEvent';
 
-// Dependency Injection
+// Dependency Injection - Why It Matters:
+// Provides centralized service management with clear scope and lifetime.
+// Singleton pattern ensures consistent service instances across the application
+// while maintaining testability through interface-based design. Services are
+// initialized once and reused, reducing overhead and ensuring predictable behavior.
 export {
   getCreateContractUseCase,
   getSchemaContractValidator,
@@ -46,10 +90,13 @@ export {
 } from './bootstrap';
 
 // =================================================================
-// LEGACY COMPATIBILITY EXPORTS (Maintained)
+// LEGACY COMPATIBILITY LAYER - DEPRECATED (Migration Required)
 // =================================================================
+// ⚠️  WARNING: These exports are DEPRECATED and will be removed in future versions.
+// ⚠️  Migrate to DDD exports above for better maintainability and type safety.
+// ⚠️  Legacy types lack domain modeling and proper validation constraints.
 
-// Re-export legacy types for backward compatibility
+// Re-export legacy types for backward compatibility (DO NOT USE IN NEW CODE)
 export type {
   ContractCategory as LegacyContractCategory,
   ContractDefinition,
@@ -66,7 +113,7 @@ export type {
   ContractEvents
 } from './types';
 
-// Legacy constants (deprecated - use domain services)
+// Legacy constants (DEPRECATED - use domain services instead)
 export const uiSizes: readonly string[] = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl'] as const;
 export const uiIntents: readonly string[] = [
   'primary',
@@ -120,8 +167,9 @@ export const uiA11yKeyboardActions: readonly string[] = [
 ] as const;
 
 // =================================================================
-// MIGRATION HELPERS
+// MIGRATION HELPERS - REQUIRED FOR LEGACY CODE
 // =================================================================
+// Use these functions to migrate from legacy to DDD. Replace legacy usage ASAP.
 
 import { Contract, ContractCategory } from './domain/contract/entities/Contract';
 import { ContractName } from './domain/shared/value-objects/ContractName';
@@ -271,10 +319,11 @@ export function isValidContractConfiguration(config: any): boolean {
 }
 
 // =================================================================
-// LEGACY UTILITY FUNCTIONS (Deprecated)
+// LEGACY UTILITY FUNCTIONS (DEPRECATED - DO NOT USE)
 // =================================================================
+// These functions are DEPRECATED. Use DDD services instead for proper domain modeling.
 
-// Quick access to standard variants (deprecated - use DDD services)
+// Quick access to standard variants (DEPRECATED - use VariantFactory instead)
 export function getStandardVariants() {
   return {
     sizes: uiSizes,

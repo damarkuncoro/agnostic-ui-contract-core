@@ -3,6 +3,8 @@ export { Contract, ContractStatus, ContractCategory } from './domain/contract/en
 export { ContractName } from './domain/shared/value-objects/ContractName';
 export { Variant } from './domain/variant/entities/Variant';
 export { VariantType } from './domain/shared/value-objects/VariantType';
+export { BaseEntity } from './domain/shared/BaseEntity';
+export { ValueObject } from './domain/shared/ValueObject';
 export { CreateContractUseCase } from './application/use-cases/CreateContractUseCase';
 export type { CreateContractInput, CreateContractOutput } from './application/use-cases/CreateContractUseCase';
 export { CreateVariantUseCaseImpl as CreateVariantUseCase } from './application/use-cases/CreateVariantUseCase';

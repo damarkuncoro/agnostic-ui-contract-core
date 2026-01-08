@@ -77,6 +77,55 @@ export type {
   PropSchemaCreatedEvent
 } from './domain/shared/events/DomainEvent';
 
+// Domain Event Publishing System - Why It Matters:
+// Provides infrastructure for publishing and subscribing to domain events.
+// Enables event-driven architecture with proper error handling and async processing.
+// Supports both synchronous and asynchronous event handlers with fault tolerance.
+export type {
+  IDomainEventPublisher,
+  DomainEventHandler
+} from './domain/shared/events/DomainEventPublisher';
+
+export {
+  InMemoryDomainEventPublisher,
+  BaseDomainEventHandler,
+  CompositeDomainEventHandler,
+  domainEventPublisher
+} from './domain/shared/events/DomainEventPublisher';
+
+// Error Handling System - Why It Matters:
+// Comprehensive error handling with domain-specific exceptions. Ensures consistent
+// error reporting, proper error classification, and maintainable error handling
+// throughout the application. Supports both programmatic and logging use cases.
+export {
+  DomainError,
+  ValidationError,
+  NotFoundError,
+  BusinessRuleViolationError,
+  ConcurrencyError,
+  AuthorizationError,
+  InfrastructureError,
+  ConfigurationError
+} from './domain/shared/errors/DomainError';
+
+export { ErrorHandler } from './domain/shared/errors/ErrorHandler';
+
+// Caching System - Why It Matters:
+// Performance optimization through intelligent caching. Supports TTL, LRU eviction,
+// and cache statistics. Critical for enterprise applications with high throughput
+// and response time requirements. Includes decorator-based caching for methods.
+export type {
+  ICache,
+  CacheEntry
+} from './infrastructure/cache/Cache';
+
+export {
+  InMemoryCache,
+  LRUCache,
+  Cached,
+  CacheKeyGenerator
+} from './infrastructure/cache/Cache';
+
 // Dependency Injection - Why It Matters:
 // Provides centralized service management with clear scope and lifetime.
 // Singleton pattern ensures consistent service instances across the application
@@ -172,7 +221,7 @@ export const uiA11yKeyboardActions: readonly string[] = [
 // Use these functions to migrate from legacy to DDD. Replace legacy usage ASAP.
 
 import { Contract, ContractCategory } from './domain/contract/entities/Contract';
-import { ContractName } from './domain/shared/value-objects/ContractName';
+import { ContractName as _ContractName } from './domain/shared/value-objects/ContractName';
 import { getCreateContractUseCase } from './bootstrap';
 import type {
   CreateContractInput,
@@ -210,13 +259,13 @@ export function createContractDDD(legacyConfig: {
   return Contract.create({
     name: legacyConfig.name,
     category,
-    version: legacyConfig.version,
-    description: legacyConfig.description,
-    variants: legacyConfig.variants,
-    props: legacyConfig.props,
-    accessibility: legacyConfig.accessibility,
-    validation: legacyConfig.validation,
-    metadata: legacyConfig.metadata
+    ...(legacyConfig.version && { version: legacyConfig.version }),
+    ...(legacyConfig.description && { description: legacyConfig.description }),
+    ...(legacyConfig.variants && { variants: legacyConfig.variants }),
+    ...(legacyConfig.props && { props: legacyConfig.props }),
+    ...(legacyConfig.accessibility && { accessibility: legacyConfig.accessibility }),
+    ...(legacyConfig.validation && { validation: legacyConfig.validation }),
+    ...(legacyConfig.metadata && { metadata: legacyConfig.metadata })
   });
 }
 
@@ -293,7 +342,7 @@ export function convertContractToLegacy(contract: Contract): {
     name: contract.name.value,
     category: categoryMap[contract.category],
     version: contract.version,
-    description: contract.description,
+    ...(contract.description && { description: contract.description }),
     variants: [...contract.variants],
     props: [...contract.props],
     accessibility: contract.accessibility,

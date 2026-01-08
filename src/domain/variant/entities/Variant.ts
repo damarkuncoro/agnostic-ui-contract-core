@@ -92,7 +92,7 @@ export class Variant extends BaseEntity {
     return true
   }
 
-  equals(other: Variant): boolean {
+  override equals(other: Variant): boolean {
     return this._type.equals(other._type) &&
            this._values.length === other._values.length &&
            this._values.every(value => other._values.includes(value))

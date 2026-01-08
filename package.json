@@ -23,10 +23,18 @@
   ],
   "scripts": {
     "build": "tsc",
-    "prepublishOnly": "npm run build",
+    "build:watch": "tsc --watch",
+    "build:clean": "rm -rf lib && npm run build",
+    "prepublishOnly": "npm run build && npm run test",
     "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage",
+    "test:ui": "vitest --ui",
     "lint": "eslint src --ext .ts",
-    "lint:fix": "eslint src --ext .ts --fix"
+    "lint:fix": "eslint src --ext .ts --fix",
+    "type-check": "tsc --noEmit",
+    "size": "size-limit",
+    "analyze": "npm run build && npx @size-limit/file lib/index.js"
   },
   "keywords": [
     "ui",

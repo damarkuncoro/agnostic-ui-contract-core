@@ -7,7 +7,7 @@ import { IContractValidator } from '../../domain/contract/services/IContractVali
 export declare class SchemaContractValidator implements IContractValidator {
     getName(): string;
     getDescription(): string;
-    validate(contract: Contract, context?: any): Promise<{
+    validate(contract: Contract, _context?: any): Promise<{
         isValid: boolean;
         errors: string[];
         warnings: string[];

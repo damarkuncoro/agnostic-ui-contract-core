@@ -2,12 +2,13 @@
  * Variant Domain Entity
  * Represents a variant with its type and allowed values
  */
+import { BaseEntity } from '../../shared/BaseEntity';
 import { VariantType } from '../../shared/value-objects/VariantType';
 import { VariantCreatedEvent } from '../../shared/events/DomainEvent';
-export declare class Variant {
+export declare class Variant extends BaseEntity {
     private readonly _type;
     private readonly _values;
-    constructor(_type: VariantType, values: string[]);
+    constructor(id: string, _type: VariantType, values: string[]);
     static create(type: VariantType, values: string[]): Variant;
     static createSizeVariant(values: string[]): Variant;
     static createIntentVariant(values: string[]): Variant;

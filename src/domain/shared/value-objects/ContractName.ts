@@ -58,7 +58,7 @@ export class ContractName extends ValueObject<string> {
   /**
    * Gets the contract name value
    */
-  get value(): string {
+  override get value(): string {
     return this._value;
   }
 
@@ -67,7 +67,7 @@ export class ContractName extends ValueObject<string> {
    */
   getNamespace(): string {
     const parts = this._value.split('-');
-    return parts[0];
+    return parts[0]!;
   }
 
   /**
@@ -129,7 +129,7 @@ export class ContractName extends ValueObject<string> {
     return this._value.split('-').length;
   }
 
-  toString(): string {
+  override toString(): string {
     return this._value;
   }
 }

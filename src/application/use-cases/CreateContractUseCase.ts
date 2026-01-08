@@ -31,16 +31,16 @@ export class CreateContractUseCase {
 
     // Create contract entity
     const contract = Contract.create({
-      id: input.id,
+      ...(input.id && { id: input.id }),
       name: contractName.value,
       category: input.category,
-      version: input.version,
-      description: input.description,
+      ...(input.version && { version: input.version }),
+      ...(input.description && { description: input.description }),
       variants,
       props,
-      accessibility: input.accessibility,
-      validation: input.validation,
-      metadata: input.metadata
+      ...(input.accessibility && { accessibility: input.accessibility }),
+      ...(input.validation && { validation: input.validation }),
+      ...(input.metadata && { metadata: input.metadata })
     });
 
     // Run additional validations
@@ -96,8 +96,8 @@ export class CreateContractUseCase {
       name: input.name,
       type: input.type,
       values: input.values,
-      defaultValue: input.defaultValue,
-      description: input.description
+      ...(input.defaultValue !== undefined && { defaultValue: input.defaultValue }),
+      ...(input.description && { description: input.description })
     }));
   }
 
@@ -109,9 +109,9 @@ export class CreateContractUseCase {
       name: input.name,
       type: input.type,
       required: input.required,
-      defaultValue: input.defaultValue,
-      description: input.description,
-      validation: input.validation
+      ...(input.defaultValue !== undefined && { defaultValue: input.defaultValue }),
+      ...(input.description && { description: input.description }),
+      ...(input.validation && { validation: input.validation })
     }));
   }
 
@@ -229,15 +229,19 @@ export class CreateContractUseCase {
       category: ContractCategory.COMPONENT,
       variants: [...baseVariants, ...(options.customVariants || [])],
       props: [...baseProps, ...(options.customProps || [])],
-      accessibility: options.includeAccessibility ? {
-        supported: true,
-        roles: ['button', 'link'],
-        keyboardActions: ['Enter', 'Space']
-      } : undefined,
-      validation: options.includeValidation ? {
-        rules: ['required-fields', 'type-validation'],
-        schema: {}
-      } : undefined
+      ...(options.includeAccessibility && {
+        accessibility: {
+          supported: true,
+          roles: ['button', 'link'],
+          keyboardActions: ['Enter', 'Space']
+        }
+      }),
+      ...(options.includeValidation && {
+        validation: {
+          rules: ['required-fields', 'type-validation'],
+          schema: {}
+        }
+      })
     };
   }
 }

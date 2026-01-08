@@ -1,4 +1,3 @@
-import { BaseEntity } from '../../shared/BaseEntity';
 import { ContractName } from '../../shared/value-objects/ContractName';
 /**
  * Contract status enumeration
@@ -23,7 +22,10 @@ export declare enum ContractCategory {
  * Contract Entity
  * Represents a contract definition with its variants, props, and validation rules
  */
-export declare class Contract extends BaseEntity {
+export declare class Contract {
+    private readonly _id;
+    private readonly _createdAt;
+    private _updatedAt;
     private _name;
     private _status;
     private _category;
@@ -36,6 +38,10 @@ export declare class Contract extends BaseEntity {
     private _metadata;
     private domainEvents;
     private constructor();
+    /**
+     * Marks the entity as modified
+     */
+    private markAsModified;
     /**
      * Creates a new Contract instance
      */
@@ -123,6 +129,9 @@ export declare class Contract extends BaseEntity {
      * Adds a domain event
      */
     private addDomainEvent;
+    get id(): string;
+    get createdAt(): Date;
+    get updatedAt(): Date;
     get name(): ContractName;
     get status(): ContractStatus;
     get category(): ContractCategory;

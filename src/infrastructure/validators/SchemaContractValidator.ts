@@ -18,7 +18,7 @@ export class SchemaContractValidator implements IContractValidator {
 
   async validate(
     contract: Contract,
-    context?: any
+    _context?: any
   ): Promise<{ isValid: boolean; errors: string[]; warnings: string[] }> {
     const errors: string[] = [];
     const warnings: string[] = [];
@@ -166,7 +166,7 @@ export class SchemaContractValidator implements IContractValidator {
   /**
    * Validates theme contract specific rules
    */
-  private validateThemeContractRules(contract: Contract, errors: string[], warnings: string[]): void {
+  private validateThemeContractRules(contract: Contract, _errors: string[], warnings: string[]): void {
     // Theme contracts should focus on visual variants
     const visualVariants = ['color', 'tone', 'emphasis'];
     const hasVisualVariant = contract.variants.some(v =>
@@ -181,7 +181,7 @@ export class SchemaContractValidator implements IContractValidator {
   /**
    * Validates skin contract specific rules
    */
-  private validateSkinContractRules(contract: Contract, errors: string[], warnings: string[]): void {
+  private validateSkinContractRules(contract: Contract, _errors: string[], warnings: string[]): void {
     // Skin contracts should have styling-related props
     const styleProps = ['className', 'style'];
     const hasStyleProp = contract.props.some(p =>
@@ -196,7 +196,7 @@ export class SchemaContractValidator implements IContractValidator {
   /**
    * Validates utility contract specific rules
    */
-  private validateUtilityContractRules(contract: Contract, errors: string[], warnings: string[]): void {
+  private validateUtilityContractRules(contract: Contract, _errors: string[], warnings: string[]): void {
     // Utility contracts should be minimal
     if (contract.variantCount > 2) {
       warnings.push('Utility contracts are typically simple with few variants');
@@ -260,7 +260,7 @@ export class SchemaContractValidator implements IContractValidator {
   /**
    * Validates variant compatibility
    */
-  private validateVariantCompatibility(contract: Contract, errors: string[], warnings: string[]): void {
+  private validateVariantCompatibility(contract: Contract, errors: string[], _warnings: string[]): void {
     // Check for conflicting variant names
     const variantNames = new Set<string>();
     for (const variant of contract.variants) {
@@ -315,27 +315,27 @@ export class SchemaContractValidator implements IContractValidator {
     // Check for required metadata fields
     const recommendedFields = ['author', 'description', 'tags'];
     for (const field of recommendedFields) {
-      if (!metadata[field]) {
+      if (!metadata[field as keyof typeof metadata]) {
         warnings.push(`Consider adding ${field} to contract metadata`);
       }
     }
 
     // Validate author format
-    if (metadata.author && typeof metadata.author !== 'string') {
+    if (metadata['author'] && typeof metadata['author'] !== 'string') {
       errors.push('Author should be a string');
     }
 
     // Validate tags
-    if (metadata.tags) {
-      if (!Array.isArray(metadata.tags)) {
+    if (metadata['tags']) {
+      if (!Array.isArray(metadata['tags'])) {
         errors.push('Tags should be an array of strings');
-      } else if (!metadata.tags.every(tag => typeof tag === 'string')) {
+      } else if (!(metadata['tags'] as any[]).every((tag: any) => typeof tag === 'string')) {
         errors.push('All tags should be strings');
       }
     }
 
     // Check for deprecated metadata
-    if (metadata.deprecated) {
+    if (metadata['deprecated']) {
       warnings.push('Contract is marked as deprecated in metadata');
     }
   }

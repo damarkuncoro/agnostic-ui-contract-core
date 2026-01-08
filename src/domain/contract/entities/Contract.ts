@@ -1,6 +1,5 @@
 // packages/agnostic-ui-contract-core/src/domain/contract/entities/Contract.ts
 
-import { BaseEntity } from '../../shared/BaseEntity';
 import { ContractName } from '../../shared/value-objects/ContractName';
 import {
   ContractCreatedEvent,
@@ -34,7 +33,10 @@ export enum ContractCategory {
  * Contract Entity
  * Represents a contract definition with its variants, props, and validation rules
  */
-export class Contract extends BaseEntity {
+export class Contract {
+  private readonly _id: string;
+  private readonly _createdAt: Date;
+  private _updatedAt: Date;
   private _name: ContractName;
   private _status: ContractStatus;
   private _category: ContractCategory;
@@ -54,7 +56,9 @@ export class Contract extends BaseEntity {
     category: ContractCategory,
     metadata: Record<string, any> = {}
   ) {
-    super(id);
+    this._id = id;
+    this._createdAt = new Date();
+    this._updatedAt = new Date();
     this._name = name;
     this._status = ContractStatus.DRAFT;
     this._category = category;
@@ -72,6 +76,13 @@ export class Contract extends BaseEntity {
     };
     this._metadata = { ...metadata };
     this.validateBusinessRules();
+  }
+
+  /**
+   * Marks the entity as modified
+   */
+  private markAsModified(): void {
+    this._updatedAt = new Date();
   }
 
   /**
@@ -308,7 +319,7 @@ export class Contract extends BaseEntity {
   /**
    * Validates accessibility
    */
-  private validateAccessibility(errors: string[], warnings: string[]): void {
+  private validateAccessibility(_errors: string[], warnings: string[]): void {
     if (this._accessibility.supported) {
       if (this._accessibility.roles.length === 0) {
         warnings.push('Accessibility-enabled contract should define supported roles');
@@ -361,6 +372,18 @@ export class Contract extends BaseEntity {
   }
 
   // Getters
+  get id(): string {
+    return this._id;
+  }
+
+  get createdAt(): Date {
+    return new Date(this._createdAt);
+  }
+
+  get updatedAt(): Date {
+    return new Date(this._updatedAt);
+  }
+
   get name(): ContractName {
     return this._name;
   }

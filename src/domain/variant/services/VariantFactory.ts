@@ -46,19 +46,19 @@ export class VariantFactory implements IVariantFactory {
   }
 
   // Convenience methods for common variants
-  createSizeVariant(values: string[] = VariantFactory.STANDARD_VARIANTS.size): Variant {
+  createSizeVariant(values: string[] = VariantFactory.STANDARD_VARIANTS[VariantType.SIZE.value]!): Variant {
     return Variant.createSizeVariant(values)
   }
 
-  createIntentVariant(values: string[] = VariantFactory.STANDARD_VARIANTS.intent): Variant {
+  createIntentVariant(values: string[] = VariantFactory.STANDARD_VARIANTS[VariantType.INTENT.value]!): Variant {
     return Variant.createIntentVariant(values)
   }
 
-  createToneVariant(values: string[] = VariantFactory.STANDARD_VARIANTS.tone): Variant {
+  createToneVariant(values: string[] = VariantFactory.STANDARD_VARIANTS[VariantType.TONE.value]!): Variant {
     return Variant.createToneVariant(values)
   }
 
-  createEmphasisVariant(values: string[] = VariantFactory.STANDARD_VARIANTS.emphasis): Variant {
+  createEmphasisVariant(values: string[] = VariantFactory.STANDARD_VARIANTS[VariantType.EMPHASIS.value]!): Variant {
     return Variant.createEmphasisVariant(values)
   }
 }

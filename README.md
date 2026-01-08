@@ -1,24 +1,152 @@
 # @damarkuncoro/agnostic-ui-contract-core
 
-**🏛️ Domain-Driven Design (DDD) Architecture** - Core contract utilities and base types for the Agnostic UI ecosystem. This package provides the foundational building blocks that all component contracts use to ensure consistency, type safety, and proper validation across the entire system.
+## 🚀 STRATEGIC ARCHITECTURAL FOUNDATION
 
-## 🏗️ Architecture Overview
+**This is NOT just another UI framework package.** This package serves as the architectural cornerstone of the entire Agnostic UI ecosystem, implementing Domain-Driven Design principles at scale. It establishes the contract between business domains and UI implementation, enabling:
 
-This package has been refactored to follow **Domain-Driven Design (DDD)** principles with clean architecture:
+• **Framework Agnosticism**: UI components can be built with any framework
+• **Domain Integrity**: Business rules are preserved across all implementations
+• **Scalable Architecture**: Clean separation of concerns for enterprise-scale UI
+• **Type Safety**: Compile-time guarantees across the entire component ecosystem
+
+Every component contract in the system extends from this foundation, ensuring consistency, maintainability, and architectural integrity across all UI layers.
+
+**🏛️ Domain-Driven Design (DDD) Architecture** - Core contract utilities and base types with complete DDD implementation and educational documentation.
+
+## 🏗️ Official Architecture Diagram
+
+```mermaid
+graph TB
+    %% Strategic Foundation
+    subgraph "🎯 STRATEGIC FOUNDATION"
+        SF[Contract Core Package<br/>Architectural Cornerstone]
+    end
+
+    %% Domain Layer
+    subgraph "🏛️ DOMAIN LAYER<br/>Business Logic & Rules"
+        subgraph "Entities<br/>(Identity & Behavior)"
+            Contract[Contract<br/>extends BaseEntity]
+            Variant[Variant<br/>extends BaseEntity]
+        end
+
+        subgraph "Value Objects<br/>(Immutable & Validated)"
+            ContractName[ContractName]
+            VariantType[VariantType]
+        end
+
+        subgraph "Domain Services<br/>(Business Coordination)"
+            VariantFactory[VariantFactory]
+            IContractValidator[IContractValidator]
+        end
+
+        subgraph "Domain Events<br/>(Business Notifications)"
+            ContractCreated[ContractCreatedEvent]
+            VariantCreated[VariantCreatedEvent]
+            ContractValidated[ContractValidatedEvent]
+        end
+    end
+
+    %% Application Layer
+    subgraph "🏢 APPLICATION LAYER<br/>Use Case Orchestration"
+        CreateContract[CreateContractUseCase]
+        CreateVariant[CreateVariantUseCase]
+    end
+
+    %% Infrastructure Layer
+    subgraph "🛠️ INFRASTRUCTURE LAYER<br/>External Concerns"
+        subgraph "Repositories<br/>(Persistence)"
+            VariantRepo[InMemoryVariantRepository<br/>IVariantRepository]
+        end
+
+        subgraph "Validators<br/>(Schema Validation)"
+            SchemaValidator[SchemaContractValidator]
+        end
+
+        subgraph "Dependency Injection<br/>(Service Management)"
+            DI[ContractCoreServiceContainer<br/>Singleton Scope]
+        end
+    end
+
+    %% Legacy Layer
+    subgraph "🔄 LEGACY LAYER<br/>DEPRECATED - Migrate Away"
+        Legacy[Legacy Types & Constants<br/>⚠️ DEPRECATED]
+    end
+
+    %% Relationships
+    Contract --> BaseEntity[BaseEntity<br/>Common Entity Behavior]
+    Variant --> BaseEntity
+
+    VariantFactory --> Variant
+    CreateVariant --> VariantFactory
+    CreateContract --> Contract
+
+    VariantRepo --> Variant
+    SchemaValidator --> Contract
+
+    DI --> VariantFactory
+    DI --> CreateVariant
+    DI --> CreateContract
+    DI --> VariantRepo
+    DI --> SchemaValidator
+
+    %% Cross-cutting
+    ContractCreated -.-> DomainEvents[Domain Events<br/>Loose Coupling]
+    VariantCreated -.-> DomainEvents
+    ContractValidated -.-> DomainEvents
+
+    %% Styling
+    classDef strategic fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef domain fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef application fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef infrastructure fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef legacy fill:#ffebee,stroke:#b71c1c,stroke-width:2px
+
+    class SF strategic
+    class Contract,Variant,ContractName,VariantType,VariantFactory,IContractValidator,ContractCreated,VariantCreated,ContractValidated domain
+    class CreateContract,CreateVariant application
+    class VariantRepo,SchemaValidator,DI infrastructure
+    class Legacy legacy
+```
+
+## 🏗️ Complete DDD Architecture Overview
+
+This package implements **Domain-Driven Design (DDD)** principles with clean architecture and educational documentation:
 
 ```
+🎯 STRATEGIC FOUNDATION (Contract Core)
+├── Framework Agnosticism
+├── Domain Integrity
+├── Scalable Architecture
+└── Type Safety Across Ecosystem
+
 📦 @damarkuncoro/agnostic-ui-contract-core
-├── 🏛️ Domain Layer (DDD)
-│   ├── Entities: Variant, ContractName
-│   ├── Value Objects: VariantType, ContractName
+├── 🏛️ Domain Layer - Why It Matters:
+│   │  Core business logic and rules. Entities represent business concepts with
+│   │  identity and behavior, Value Objects are immutable descriptive aspects.
+│   │  Ensures business rules remain independent of infrastructure.
+│   ├── Entities: Contract, Variant (both extend BaseEntity)
+│   ├── Value Objects: ContractName, VariantType
 │   ├── Domain Services: VariantFactory
-│   └── Domain Events: ContractCreatedEvent
-├── 🏢 Application Layer
-│   └── Use Cases: CreateVariantUseCase
-├── 🛠️ Infrastructure Layer
-│   └── Repositories: VariantRepository
-└── 🔄 Legacy Compatibility Layer
-    └── Backward-compatible APIs
+│   └── Domain Events: ContractCreatedEvent, VariantCreatedEvent
+├── 🏢 Application Layer - Why It Matters:
+│   │  Use Cases orchestrate complex business operations and coordinate between
+│   │  domain objects. Encapsulates application-specific logic while keeping
+│   │  the domain layer pure and focused on business rules.
+│   └── Use Cases: CreateContractUseCase, CreateVariantUseCase
+├── 🛠️ Infrastructure Layer - Why It Matters:
+│   │  Infrastructure concerns (persistence, external services, frameworks) are
+│   │  isolated here through interfaces and adapters. This allows the domain and
+│   │  application layers to remain independent and testable.
+│   ├── Repositories: InMemoryVariantRepository
+│   ├── Validators: SchemaContractValidator
+│   └── DI Container: ContractCoreServiceContainer (Singleton)
+├── 🔄 Legacy Compatibility Layer - DEPRECATED (Migration Required)
+│   ⚠️  WARNING: These exports are DEPRECATED and will be removed in future versions.
+│   ⚠️  Migrate to DDD exports above for better maintainability and type safety.
+│   ⚠️  Legacy types lack domain modeling and proper validation constraints.
+│   └── Legacy types and utilities (with clear warnings)
+└── 📚 Educational Documentation
+    └── "Why It Matters" explanations for each layer
 ```
 
 ### Key Benefits of DDD Architecture
@@ -28,7 +156,10 @@ This package has been refactored to follow **Domain-Driven Design (DDD)** princi
 - ✅ **Clean Architecture**: Clear separation between domain, application, and infrastructure
 - ✅ **Testability**: Dependency injection enables comprehensive unit testing
 - ✅ **Maintainability**: Organized code structure that's easy to extend
-- ✅ **Backward Compatibility**: Legacy APIs remain functional during transition
+- ✅ **Domain Integrity**: Business rules properly encapsulated and validated
+- ✅ **Educational Value**: "Why It Matters" documentation for each architectural pattern
+- ✅ **Strategic Positioning**: Foundation for enterprise-scale UI architecture
+- ✅ **Migration Path**: Clear deprecation warnings and upgrade guidance
 
 ## Installation
 
@@ -42,23 +173,27 @@ yarn add @damarkuncoro/agnostic-ui-contract-core
 
 ## Overview
 
-The contract core provides:
+The contract core provides a complete architectural foundation:
 
-### 🏛️ **DDD Architecture (New)**
-- **Domain Entities**: `Contract`, `Variant`, `ContractName` with business logic
+### 🏛️ **DDD Architecture (Complete Implementation)**
+- **Domain Entities**: `Contract`, `Variant` (both extend `BaseEntity` for consistency)
 - **Value Objects**: Immutable objects with validation (`ContractName`, `VariantType`)
-- **Domain Services**: Business logic coordination (`IContractValidator`)
-- **Use Cases**: Application orchestration (`CreateContractUseCase`)
-- **Infrastructure**: Schema validation (`SchemaContractValidator`)
-- **Domain Events**: Business event notifications (`ContractCreatedEvent`, `ContractValidatedEvent`)
-- **Dependency Injection**: Clean service container with singleton pattern
+- **Domain Services**: Business logic coordination (`VariantFactory`, `IContractValidator`)
+- **Use Cases**: Application orchestration (`CreateContractUseCase`, `CreateVariantUseCase`)
+- **Infrastructure**: Schema validation (`SchemaContractValidator`) and repositories (`VariantRepository`)
+- **Domain Events**: Business event notifications (`ContractCreatedEvent`, `VariantCreatedEvent`)
+- **Dependency Injection**: Clean service container with singleton scope and clear lifetime
 
-### 🔄 **Legacy Compatibility (Maintained)**
-- **Base Types**: Fundamental interfaces for contracts, properties, and validation
-- **Standard Variants**: Common size, intent, tone, and emphasis variants
-- **Accessibility Support**: ARIA roles and keyboard action constants
-- **Utility Functions**: Helpers for creating and validating contracts
-- **Validation Logic**: Property and contract validation utilities
+### 🔄 **Legacy Compatibility Layer (DEPRECATED - Migration Required)**
+⚠️ **WARNING**: These exports are DEPRECATED and will be removed in future versions.
+⚠️ **MIGRATE**: Use DDD exports above for better maintainability and type safety.
+⚠️ **ISSUE**: Legacy types lack domain modeling and proper validation constraints.
+
+- **Legacy Types**: Fundamental interfaces (maintained for backward compatibility)
+- **Standard Constants**: Common variants (deprecated - use domain services)
+- **Accessibility Constants**: ARIA roles and keyboard actions (deprecated)
+- **Utility Functions**: Helpers (deprecated - use DDD services)
+- **Validation Logic**: Basic validation (deprecated - use domain validators)
 
 ## 🏛️ Domain-Driven Design APIs
 
@@ -406,85 +541,105 @@ CONTRACT_REGISTRY['my-component'] = myContract;
 
 ## Migration Guide
 
-### 🆕 New DDD Approach (Recommended)
+### 🚨 **IMMEDIATE MIGRATION REQUIRED**
 
-For new development, use the DDD architecture:
+**⚠️ DEPRECATED WARNING**: Legacy APIs are DEPRECATED and will be removed in the next major version. **Start migrating NOW** to avoid breaking changes.
+
+### 🆕 **DDD Approach (REQUIRED for New Code)**
+
+For ALL new development, use the complete DDD architecture:
 
 ```typescript
 import {
   Variant,
   VariantType,
   VariantFactory,
-  CreateVariantUseCaseImpl
+  CreateVariantUseCaseImpl,
+  Contract,
+  ContractName
 } from '@damarkuncoro/agnostic-ui-contract-core';
 
-// 1. Use domain entities
+// 1. Use domain entities with proper inheritance
 const sizeVariant = Variant.create(VariantType.SIZE, ['xs', 'sm', 'md', 'lg', 'xl']);
+console.log(sizeVariant.id); // Access BaseEntity properties
+console.log(sizeVariant.createdAt); // Entity lifecycle tracking
 
-// 2. Use domain services
+// 2. Use domain services for business logic
 const factory = new VariantFactory();
 const variants = factory.createStandardVariants();
 
 // 3. Use use cases for complex operations
 const useCase = new CreateVariantUseCaseImpl(factory);
 const result = await useCase.createVariant({
-  type: 'INTENT',
+  type: VariantType.INTENT,
   values: ['primary', 'secondary', 'success']
+});
+
+// 4. Create contracts using domain entities
+const contractName = ContractName.create('my-button-component');
+const contract = Contract.create({
+  name: contractName.value,
+  category: 'component',
+  variants: [sizeVariant],
+  props: [],
+  accessibility: { supported: true, roles: ['button'] }
 });
 ```
 
-### 🔄 Legacy Compatibility (Maintained)
+### 🔄 **Legacy Compatibility (DEPRECATED - DO NOT USE)**
 
-Existing code continues to work unchanged:
+**⚠️ WARNING**: These APIs are DEPRECATED. Existing code should be migrated immediately.
 
 ```typescript
-// Legacy approach (still supported)
+// DEPRECATED - DO NOT USE IN NEW CODE
 import { createContract, uiSizes, uiIntents } from '@damarkuncoro/agnostic-ui-contract-core';
 
-const contract = createContract({
+const contract = createContract({ // DEPRECATED
   name: 'button',
   displayName: 'Button',
   category: 'form',
   propsSchema: {
-    size: { type: 'string', enum: uiSizes },
-    intent: { type: 'string', enum: uiIntents }
+    size: { type: 'string', enum: uiSizes }, // DEPRECATED
+    intent: { type: 'string', enum: uiIntents } // DEPRECATED
   }
 });
 ```
 
-### Migration Benefits
+### Migration Benefits Comparison
 
 | Aspect | Legacy Approach | DDD Approach |
 |--------|----------------|--------------|
-| **Testability** | Limited | High (dependency injection) |
-| **Maintainability** | Moderate | High (clear boundaries) |
-| **Extensibility** | Limited | High (interface-based) |
-| **Type Safety** | Good | Excellent (domain validation) |
-| **Code Organization** | Functional | Architectural layers |
-| **Business Logic** | Scattered | Centralized in domain |
-| **Dependencies** | Tight coupling | Loose coupling |
+| **Testability** | Limited | ✅ High (dependency injection) |
+| **Maintainability** | Moderate | ✅ High (clear boundaries) |
+| **Extensibility** | Limited | ✅ High (interface-based) |
+| **Type Safety** | Good | ✅ Excellent (domain validation) |
+| **Code Organization** | Functional | ✅ Architectural layers |
+| **Business Logic** | Scattered | ✅ Centralized in domain |
+| **Dependencies** | Tight coupling | ✅ Loose coupling |
+| **Entity Consistency** | ❌ Inconsistent | ✅ All entities extend BaseEntity |
+| **Educational Value** | None | ✅ "Why It Matters" documentation |
 
-### Gradual Migration Strategy
+### **URGENT Migration Strategy**
 
-1. **Phase 1**: Continue using legacy APIs for existing code
-2. **Phase 2**: Use DDD APIs for new features
-3. **Phase 3**: Gradually migrate existing code to DDD
-4. **Phase 4**: Deprecate legacy APIs (future release)
+1. **Phase 1 (Immediate)**: Stop using legacy APIs in new code
+2. **Phase 2 (This Sprint)**: Migrate existing simple components to DDD
+3. **Phase 3 (Next Sprint)**: Migrate complex components with business logic
+4. **Phase 4 (Future Release)**: Legacy APIs removed entirely
 
-### When to Use Each Approach
+### **When to Use Each Approach**
 
-#### Use DDD APIs when:
-- Building new features or components
-- Complex business logic is required
-- High testability is needed
-- Long-term maintainability is critical
-- Working in large teams
+#### ✅ **REQUIRED: Use DDD APIs for:**
+- ALL new features or components
+- Complex business logic requirements
+- High testability needs
+- Long-term maintainability requirements
+- Large team collaboration
+- Enterprise-scale applications
 
-#### Use Legacy APIs when:
-- Quick prototyping or simple use cases
-- Maintaining existing code
-- Simple property validation
-- Minimal business logic requirements
+#### ⚠️ **DEPRECATED: Legacy APIs only for:**
+- **Temporary** maintenance of existing code
+- **Immediate** migration planning
+- **DO NOT** use in any new development
 
 ## Related Packages
 
@@ -547,13 +702,22 @@ When maintaining legacy APIs:
 5. **Test Coverage**: Maintain high test coverage for all code
 6. **Type Safety**: Full TypeScript with strict typing
 
-## Architecture Evolution
+## Architecture Evolution & Consistency Improvements
+
+### DDD Consistency Improvements Completed
+- ✅ **Entity Consistency**: All entities (`Contract`, `Variant`) now extend `BaseEntity`
+- ✅ **Terminology Standardization**: Consistent DDD naming across all layers
+- ✅ **Educational Documentation**: "Why It Matters" explanations for each architectural pattern
+- ✅ **Strategic Positioning**: Clear architectural foundation role established
+- ✅ **Migration Guidance**: Assertive deprecation warnings and upgrade paths
+- ✅ **Complete API Coverage**: All DDD components properly exported and documented
 
 ### DDD Refactoring Timeline
 - **Initial Release**: Legacy functional architecture
 - **DDD Refactoring**: January 2026 - Complete domain-driven redesign
-- **Migration Period**: Gradual adoption of DDD APIs (ongoing)
-- **Legacy Support**: Maintained until next major version
+- **Consistency Improvements**: January 2026 - Terminology standardization and documentation
+- **Migration Period**: **URGENT** - Immediate adoption of DDD APIs required
+- **Legacy Removal**: Next major version (legacy APIs deprecated)
 
 ### Architecture Benefits Achieved
 - ✅ **SOLID Principles**: All five principles implemented
@@ -562,10 +726,14 @@ When maintaining legacy APIs:
 - ✅ **Domain-Driven Design**: Business logic properly encapsulated
 - ✅ **Testability**: Dependency injection enables comprehensive testing
 - ✅ **Maintainability**: Organized structure for long-term development
-- ✅ **Backward Compatibility**: Legacy APIs remain functional
+- ✅ **Entity Consistency**: All domain entities follow same inheritance pattern
+- ✅ **Educational Value**: Complete "Why It Matters" documentation
+- ✅ **Strategic Foundation**: Architectural cornerstone for enterprise UI
+- ✅ **Type Safety**: Compile-time guarantees across entire ecosystem
+- ✅ **Framework Agnosticism**: UI components work with any framework
 
 ## License
 
 MIT © [Damar Kuncoro](https://github.com/damarkuncoro)
 
-**DDD Refactoring Completed**: January 2026
+**DDD Refactoring & Consistency Improvements Completed**: January 2026

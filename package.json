@@ -1,6 +1,6 @@
 {
   "name": "@damarkuncoro/agnostic-ui-contract-core",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Core contract utilities and base types for Agnostic UI",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -53,10 +53,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/damarkuncoro/agnostic-ui-contract-core"
+    "url": "git+https://github.com/damarkuncoro/agnostic-ui-contract-core.git"
   },
   "bugs": {
     "url": "https://github.com/damarkuncoro/agnostic-ui-contract-core/issues"
   },
-  "homepage": "https://github.com/damarkuncoro/agnostic-ui-contract-core#readme"
+  "homepage": "https://github.com/damarkuncoro/agnostic-ui-contract-core#readme",
+  "directories": {
+    "lib": "lib"
+  }
 }

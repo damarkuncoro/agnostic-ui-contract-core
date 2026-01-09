@@ -6,6 +6,7 @@
 
 ## 📚 Documentation
 
+- **[Q&A.md](Q&A.md)** - What problems does contract-core solve?
 - **[API.md](API.md)** - Complete API reference with examples
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - DDD architecture overview
 - **[MIGRATION.md](MIGRATION.md)** - Migration guide from legacy APIs

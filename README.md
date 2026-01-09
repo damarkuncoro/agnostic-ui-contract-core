@@ -6,6 +6,7 @@
 
 ## 📚 Documentation
 
+- **[PACKAGES.md](PACKAGES.md)** - Package dependencies & functions by layer
 - **[FLOW.md](FLOW.md)** - Complete data flow between all layers
 - **[WHAT-NEXT.md](WHAT-NEXT.md)** - What to do after creating a contract?
 - **[Q&A.md](Q&A.md)** - What problems does contract-core solve?

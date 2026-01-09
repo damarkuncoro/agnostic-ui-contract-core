@@ -112,6 +112,89 @@ export {
 
 export { ErrorHandler } from './domain/shared/errors/ErrorHandler';
 
+// =================================================================
+// DRY & SOLID PRINCIPLES IMPLEMENTATION
+// =================================================================
+
+// Validation Utilities (DRY) - Why It Matters:
+// Centralized validation logic eliminates code duplication across contracts.
+// Common validation patterns are shared, reducing maintenance overhead and
+// ensuring consistent validation behavior across all components.
+export {
+  validateInSet,
+  validateAccessibility,
+  validateKeyboardSupport,
+  validateVariant,
+  validateEntityName,
+  combineValidationResults,
+  createValidationResult,
+  COMMON_VARIANTS
+} from './domain/shared/validation/ValidationUtils';
+
+// Specification Pattern (SOLID) - Why It Matters:
+// Enables composable business rules following Open/Closed principle.
+// New validation rules can be added without modifying existing code,
+// supporting complex business logic combinations through specification composition.
+export {
+  Specification,
+  EntityNameSpecification,
+  VariantValueSpecification,
+  AccessibilitySpecification,
+  KeyboardSupportSpecification,
+  ComponentSpecification
+} from './domain/shared/specifications/Specification';
+export type { ISpecification } from './domain/shared/specifications/Specification';
+
+// Strategy Pattern for Validation (SOLID) - Why It Matters:
+// Enables Open/Closed principle for validation strategies. New validation
+// approaches can be added without modifying existing validation logic,
+// supporting different validation contexts and requirements.
+export {
+  ValidationStrategy,
+  CompositeValidationStrategy,
+  EntityValidationStrategy,
+  ComponentValidationStrategy,
+  AccessibilityValidationStrategy,
+  BusinessRulesValidationStrategy,
+  ValidationStrategyFactory,
+  ValidationContext
+} from './domain/shared/validation/ValidationStrategy';
+export type { IValidationStrategy } from './domain/shared/validation/ValidationStrategy';
+
+// Repository Pattern (SOLID) - Why It Matters:
+// Interface Segregation and Dependency Inversion principles ensure
+// persistence logic is abstracted behind clean interfaces. Domain
+// layer remains independent of infrastructure concerns, enabling
+// easy testing and technology migration.
+export {
+  BaseRepository,
+  InMemoryRepository
+} from './domain/shared/repositories/IRepository';
+export type {
+  IRepository,
+  IQueryableRepository,
+  IPaginatedRepository,
+  IUnitOfWork,
+  IRepositoryFactory,
+  IContractRepository,
+  IComponentRepository
+} from './domain/shared/repositories/IRepository';
+
+// Factory Pattern Base Classes (DRY/SOLID) - Why It Matters:
+// Common factory patterns are abstracted into reusable base classes,
+// eliminating code duplication while maintaining Single Responsibility.
+// Open/Closed principle allows extension without modification.
+export {
+  BaseFactory,
+  FactoryRegistry,
+  ComponentFactory,
+  ContractFactory,
+  FactoryMethod,
+  GlobalFactoryRegistry,
+  FactoryBuilder
+} from './domain/shared/factories/BaseFactory';
+export type { IFactory } from './domain/shared/factories/BaseFactory';
+
 // Caching System - Why It Matters:
 // Performance optimization through intelligent caching. Supports TTL, LRU eviction,
 // and cache statistics. Critical for enterprise applications with high throughput

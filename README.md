@@ -196,6 +196,10 @@ pnpm add @damarkuncoro/agnostic-ui-contract-core
 yarn add @damarkuncoro/agnostic-ui-contract-core
 ```
 
+## 📚 API Documentation
+
+For comprehensive API documentation with examples, see [API.md](API.md).
+
 ## Overview
 
 The contract core provides a complete architectural foundation:

@@ -20,6 +20,15 @@ export type { IDomainEventPublisher, DomainEventHandler } from './domain/shared/
 export { InMemoryDomainEventPublisher, BaseDomainEventHandler, CompositeDomainEventHandler, domainEventPublisher } from './domain/shared/events/DomainEventPublisher';
 export { DomainError, ValidationError, NotFoundError, BusinessRuleViolationError, ConcurrencyError, AuthorizationError, InfrastructureError, ConfigurationError } from './domain/shared/errors/DomainError';
 export { ErrorHandler } from './domain/shared/errors/ErrorHandler';
+export { validateInSet, validateAccessibility, validateKeyboardSupport, validateVariant, validateEntityName, combineValidationResults, createValidationResult, COMMON_VARIANTS } from './domain/shared/validation/ValidationUtils';
+export { Specification, EntityNameSpecification, VariantValueSpecification, AccessibilitySpecification, KeyboardSupportSpecification, ComponentSpecification } from './domain/shared/specifications/Specification';
+export type { ISpecification } from './domain/shared/specifications/Specification';
+export { ValidationStrategy, CompositeValidationStrategy, EntityValidationStrategy, ComponentValidationStrategy, AccessibilityValidationStrategy, BusinessRulesValidationStrategy, ValidationStrategyFactory, ValidationContext } from './domain/shared/validation/ValidationStrategy';
+export type { IValidationStrategy } from './domain/shared/validation/ValidationStrategy';
+export { BaseRepository, InMemoryRepository } from './domain/shared/repositories/IRepository';
+export type { IRepository, IQueryableRepository, IPaginatedRepository, IUnitOfWork, IRepositoryFactory, IContractRepository, IComponentRepository } from './domain/shared/repositories/IRepository';
+export { BaseFactory, FactoryRegistry, ComponentFactory, ContractFactory, FactoryMethod, GlobalFactoryRegistry, FactoryBuilder } from './domain/shared/factories/BaseFactory';
+export type { IFactory } from './domain/shared/factories/BaseFactory';
 export type { ICache, CacheEntry } from './infrastructure/cache/Cache';
 export { InMemoryCache, LRUCache, Cached, CacheKeyGenerator } from './infrastructure/cache/Cache';
 export { getCreateContractUseCase, getSchemaContractValidator, getContractValidators, getContractCoreService } from './bootstrap';

@@ -6,6 +6,7 @@
 
 ## 📚 Documentation
 
+- **[FLOW.md](FLOW.md)** - Complete data flow between all layers
 - **[WHAT-NEXT.md](WHAT-NEXT.md)** - What to do after creating a contract?
 - **[Q&A.md](Q&A.md)** - What problems does contract-core solve?
 - **[API.md](API.md)** - Complete API reference with examples
